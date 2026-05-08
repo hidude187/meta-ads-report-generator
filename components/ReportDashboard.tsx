@@ -5,9 +5,11 @@ import { calcKPIs } from "@/lib/csvParser";
 import { generateInsights } from "@/lib/formatters";
 import KPICards from "./KPICards";
 import CampaignTable from "./CampaignTable";
-import Charts from "./Charts";
+import dynamic from "next/dynamic";
 import InsightsPanel from "./InsightsPanel";
-import ExportButtons from "./ExportButtons";
+
+const Charts = dynamic(() => import("./Charts"), { ssr: false });
+const ExportButtons = dynamic(() => import("./ExportButtons"), { ssr: false });
 
 interface Props {
   campaigns: CampaignData[];
