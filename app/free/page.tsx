@@ -1,0 +1,10 @@
+import ReportTool from "@/components/ReportTool";
+
+export const metadata = {
+  title: "MetriQuill Free — Meta Ads Report Generator",
+  description: "Upload your Facebook Ads CSV and get a branded PDF report in 30 seconds. No login. No subscription.",
+};
+
+export default function FreePage() {
+  return <ReportTool />;
+}
