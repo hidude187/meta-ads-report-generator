@@ -55,7 +55,7 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
 
       {/* KPI Cards */}
       {sectionTitle("Key Performance Indicators")}
-      <KPICards campaigns={campaigns} currency={clientInfo.currency} kpis={kpis} />
+      <KPICards currency={clientInfo.currency} kpis={kpis} />
 
       {/* Charts */}
       {sectionTitle("Visual Analysis")}
