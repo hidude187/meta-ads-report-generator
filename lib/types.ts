@@ -32,4 +32,6 @@ export interface KPISummary {
   avgCPM: number;
   totalConversions: number;
   avgROAS: number;
+  avgFrequency: number;
+  totalReach: number;
 }

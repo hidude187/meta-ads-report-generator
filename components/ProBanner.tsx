@@ -14,7 +14,7 @@ export default function ProBanner() {
     }}>
       <span>⚡ Want Google Ads, TikTok, Snapchat + AI insights?</span>
       <a
-        href="https://metriquill.com"
+        href="https://metriquill.com?utm_source=metriquill-free&utm_medium=probanner&utm_campaign=upgrade"
         target="_blank"
         rel="noopener noreferrer"
         style={{

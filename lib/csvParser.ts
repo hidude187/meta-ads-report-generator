@@ -11,6 +11,7 @@ const KEY_MAP: Record<string, keyof CampaignData> = {
   'results': 'conversions', 'conversions': 'conversions', 'purchases': 'conversions',
   'purchase roas (return on ad spend)': 'roas', 'roas': 'roas',
   'reach': 'reach',
+  'frequency': 'frequency',
 };
 
 function normalizeKey(k: string): string {
@@ -42,6 +43,8 @@ export function parseCSV(rows: Record<string, string>[]): CampaignData[] {
     if (c.impressions && c.clicks && !c.ctr) c.ctr = (c.clicks / c.impressions) * 100;
     if (c.spend && c.clicks && !c.cpc) c.cpc = c.spend / c.clicks;
     if (c.spend && c.impressions && !c.cpm) c.cpm = (c.spend / c.impressions) * 1000;
+    // Derive frequency if reach available but frequency not in CSV
+    if (c.impressions && c.reach && !c.frequency) c.frequency = c.impressions / c.reach;
     return c as CampaignData;
   }).filter(c => c.spend > 0 || c.impressions > 0);
 }
@@ -66,5 +69,8 @@ export function calcKPIs(campaigns: CampaignData[]) {
   const avgCPM = totalImpressions ? (totalSpend / totalImpressions) * 1000 : 0;
   const rc = campaigns.filter(c => c.roas > 0);
   const avgROAS = rc.length ? rc.reduce((s, c) => s + c.roas, 0) / rc.length : 0;
-  return { totalSpend, totalImpressions, totalClicks, avgCTR, avgCPC, avgCPM, totalConversions, avgROAS };
+  // Frequency: total impressions / total reach
+  const totalReach = campaigns.reduce((s, c) => s + (c.reach || 0), 0);
+  const avgFrequency = totalReach ? totalImpressions / totalReach : 0;
+  return { totalSpend, totalImpressions, totalClicks, avgCTR, avgCPC, avgCPM, totalConversions, avgROAS, avgFrequency, totalReach };
 }

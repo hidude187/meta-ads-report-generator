@@ -31,7 +31,7 @@ export default function Navbar() {
       </div>
 
       <a
-        href="https://metriquill.com"
+        href="https://metriquill.com?utm_source=metriquill-free&utm_medium=navbar&utm_campaign=upgrade"
         target="_blank"
         rel="noopener noreferrer"
         style={{

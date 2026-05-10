@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MetriQuill Free
 
-## Getting Started
+**Free, open-source Facebook Ads CSV → PDF report generator.**
+No login. No API tokens. No subscription. Upload your CSV and get a branded PDF in 30 seconds.
 
-First, run the development server:
+---
+
+## 🚀 Try it live
+
+👉 **[metriquill.com/free](https://metriquill.com/free)**
+
+No install. Works in any browser.
+
+---
+
+## What it does
+
+1. Fill in client name, agency, date range, brand color, logo
+2. Upload your Facebook Ads Manager CSV export — or load the built-in demo
+3. Get: 10 KPI cards, campaign table, 3 interactive charts, AI-style insights
+4. Export: branded multi-page PDF, social PNG (1200×675), or clean CSV
+
+---
+
+## Screenshots
+
+> PDF cover page · KPI summary · Bubble chart (CTR vs ROAS matrix)
+
+*(Add screenshots here)*
+
+---
+
+## Features
+
+- ✅ No login required
+- ✅ No API connection needed
+- ✅ Branded PDF with logo, brand color, agency + client name
+- ✅ 10 KPI cards including Reach, Frequency (with ad fatigue warning)
+- ✅ Bar chart, Donut chart, CTR vs ROAS bubble matrix
+- ✅ Rules-based insights panel
+- ✅ PNG social card export (1200×675)
+- ✅ CSV re-export
+- ✅ Currencies: DZD · USD · EUR · SAR · AED
+- ✅ Mobile responsive
+
+---
+
+## Supported currencies
+
+**DZD** · USD · EUR · SAR · AED
+
+*(MENA-first — DZD is supported. Most tools ignore it.)*
+
+---
+
+## Stack
+
+Next.js 16 · Chart.js 4 · jsPDF · PapaParse · Tailwind CSS · TypeScript
+
+---
+
+## Run locally
 
 ```bash
+git clone https://github.com/hidude187/metriquill-free
+cd metriquill-free
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Roadmap
 
-## Learn More
+- [ ] Period comparison (vs last month) — % change on KPI cards
+- [ ] TikTok Ads CSV support
+- [ ] Google Ads CSV support
+- [ ] Arabic RTL + French UI
+- [ ] Ad set level toggle
+- [x] Frequency metric + ad fatigue warning
+- [x] PNG social card export
+- [x] Logo upload on PDF cover
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Want more?
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**[MetriQuill Pro](https://metriquill.com)** — coming soon.
+AI insights, Google Ads + TikTok, multi-client, scheduled reports, white-label PDF, live dashboard links.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+PRs welcome. Especially for:
+- New platform CSV column mappings (TikTok, Google, Snapchat)
+- New language translations (FR, AR, ES)
+- Bug fixes
+
+---
+
+## License
+
+MIT
