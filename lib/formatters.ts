@@ -1,23 +1,25 @@
-export function fmt(val: number, type: 'currency' | 'number' | 'percent' | 'decimal', currency = 'USD'): string {
-  if (type === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(val);
-  if (type === 'percent') return val.toFixed(2) + '%';
-  if (type === 'decimal') return val.toFixed(2);
-  return new Intl.NumberFormat('en-US').format(Math.round(val));
+export function fmt(val: number | undefined | null, type: 'currency' | 'number' | 'percent' | 'decimal', currency = 'USD'): string {
+  const n = (val === undefined || val === null || isNaN(val as number)) ? 0 : val;
+  if (type === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n);
+  if (type === 'percent') return n.toFixed(2) + '%';
+  if (type === 'decimal') return n.toFixed(2);
+  return new Intl.NumberFormat('en-US').format(Math.round(n));
 }
 
 export function generateInsights(campaigns: import('./types').CampaignData[], currency: string): string[] {
   const insights: string[] = [];
   if (!campaigns.length) return insights;
-  const sorted = [...campaigns].sort((a, b) => b.roas - a.roas);
+  const sorted = [...campaigns].sort((a, b) => (b.roas ?? 0) - (a.roas ?? 0));
   const best = sorted[0];
   const worst = sorted[sorted.length - 1];
-  if (best && best.roas > 3) insights.push('Scale "' + best.name + '" — ROAS of ' + best.roas.toFixed(1) + 'x is your strongest performer. Increase budget 20-30%.');
-  if (worst && worst.roas > 0 && worst.roas < 1.5) insights.push('Review "' + worst.name + '" — ROAS ' + worst.roas.toFixed(1) + 'x is below break-even. Pause or restructure creative.');
-  const highCPC = campaigns.filter(c => c.cpc > 15);
+  if (best && (best.roas ?? 0) > 3) insights.push('Scale "' + best.name + '" — ROAS of ' + (best.roas ?? 0).toFixed(1) + 'x is your strongest performer. Increase budget 20-30%.');
+  if (worst && (worst.roas ?? 0) > 0 && (worst.roas ?? 0) < 1.5) insights.push('Review "' + worst.name + '" — ROAS ' + (worst.roas ?? 0).toFixed(1) + 'x is below break-even. Pause or restructure creative.');
+  const highCPC = campaigns.filter(c => (c.cpc ?? 0) > 15);
   if (highCPC.length) insights.push(highCPC.length + ' campaign(s) have CPC above 15 — consider refreshing creatives to improve CTR.');
-  const topSpend = [...campaigns].sort((a, b) => b.spend - a.spend)[0];
+  const topSpend = [...campaigns].sort((a, b) => (b.spend ?? 0) - (a.spend ?? 0))[0];
   if (topSpend) {
-    const pct = (topSpend.spend / campaigns.reduce((s, c) => s + c.spend, 0) * 100).toFixed(0);
+    const total = campaigns.reduce((s, c) => s + (c.spend ?? 0), 0);
+    const pct = total > 0 ? ((topSpend.spend ?? 0) / total * 100).toFixed(0) : '0';
     insights.push('"' + topSpend.name + '" accounts for ' + pct + '% of total spend — ensure performance justifies allocation.');
   }
   const highFreq = campaigns.filter(c => (c.frequency ?? 0) > 3);
