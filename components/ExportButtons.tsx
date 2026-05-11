@@ -187,7 +187,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
       doc.text(`Client: ${clientInfo.clientName || "—"}`, 20, 155);
       doc.text(`Agency: ${clientInfo.agencyName || "—"}`, 20, 163);
       if (clientInfo.dateFrom && clientInfo.dateTo) {
-        doc.text(`Period: ${clientInfo.dateFrom} → ${clientInfo.dateTo}`, 20, 171);
+        doc.text(`Period: ${clientInfo.dateFrom} - ${clientInfo.dateTo}`, 20, 171);
       }
 
       doc.setFontSize(9); doc.setTextColor(255,255,255);
@@ -241,7 +241,9 @@ export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
         if (y > H - 20) return;
         if (i % 2 === 0) { doc.setFillColor(248,250,252); doc.rect(20,y-5,W-40,11,"F"); }
         doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(15,23,42);
-        const name = c.name.length > 35 ? c.name.slice(0,35)+"…" : c.name;
+        // Strip non-latin chars jsPDF helvetica can't render (Arabic, emoji etc.)
+        const cleanName = c.name.replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim() || c.name.slice(0, 20);
+        const name = cleanName.length > 35 ? cleanName.slice(0,35)+"..." : cleanName;
         doc.text(name, 20, y);
         doc.text(fmt(c.spend,"currency",clientInfo.currency), 110, y);
         doc.text(fmt(c.ctr,"percent"), 140, y);
