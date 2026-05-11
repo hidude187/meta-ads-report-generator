@@ -1,4 +1,4 @@
-import ReportTool from "@/components/ReportTool";
+import ReportToolClient from "@/components/ReportToolClient";
 
 export const metadata = {
   title: "MetriQuill Free — Meta Ads Report Generator",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function FreePage() {
-  return <ReportTool />;
+  return <ReportToolClient />;
 }
