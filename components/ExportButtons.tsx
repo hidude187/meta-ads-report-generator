@@ -70,6 +70,16 @@ function canvasRoundRect(
 export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pngLoading, setPngLoading] = useState(false);
+  const [pptxLoading, setPptxLoading] = useState(false);
+
+  const exportPPTX = async () => {
+    setPptxLoading(true);
+    try {
+      const { exportPPTX: runExport } = await import("@/lib/exportPPTX");
+      await runExport(campaigns, clientInfo);
+    } catch (e) { console.error("PPTX error:", e); }
+    finally { setPptxLoading(false); }
+  };
 
   // ── CSV ───────────────────────────────────────────────────────────────────
   const exportCSV = () => {
@@ -549,6 +559,10 @@ export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
       <button onClick={exportPDF} disabled={pdfLoading} style={btnStyle(true)}>
         <span style={{ display:"inline-block" }}>{pdfLoading ? "⏳" : "📄"}</span>
         {pdfLoading ? "Generating PDF…" : "Download PDF"}
+      </button>
+      <button onClick={exportPPTX} disabled={pptxLoading} style={btnStyle()}>
+        <span style={{ display:"inline-block" }}>{pptxLoading ? "⏳" : "📊"}</span>
+        {pptxLoading ? "Generating PPTX…" : "Export PowerPoint"}
       </button>
       <button onClick={exportPNG} disabled={pngLoading} style={btnStyle()}>
         <span style={{ display:"inline-block" }}>{pngLoading ? "⏳" : "🖼️"}</span>
