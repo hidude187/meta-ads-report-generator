@@ -1,1 +1,1 @@
-feat: health dots on KPI cells, dont-react warnings in insights
+fix: remove invalid eslint key from next.config.ts
