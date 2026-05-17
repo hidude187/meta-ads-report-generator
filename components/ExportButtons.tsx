@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { CampaignData, ClientInfo } from "@/lib/types";
-import { fmt } from "@/lib/formatters";
+import { fmt, BENCHMARKS, getCampaignBadge, generateRecommendations } from "@/lib/formatters";
 
 interface Props {
   campaigns: CampaignData[];
   clientInfo: ClientInfo;
   kpis: Record<string, number>;
+  insights?: string[];
 }
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
@@ -27,34 +28,24 @@ function hasArabic(str: string): boolean {
   return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(str);
 }
 
-// Reverse Arabic words for RTL rendering in canvas (which is LTR-only)
 function reverseArabic(str: string): string {
   return str.split(" ").reverse().join(" ");
 }
 
-// Fetch Amiri font and return base64 string for jsPDF embedding
 async function fetchAmiriBase64(): Promise<string | null> {
   try {
-    const res = await fetch(
-      "https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2"
-    );
+    const res = await fetch("https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2");
     const buf = await res.arrayBuffer();
     const bytes = new Uint8Array(buf);
     let binary = "";
     bytes.forEach(b => { binary += String.fromCharCode(b); });
     return btoa(binary);
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-function canvasRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number, r: number
-) {
+function canvasRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
   ctx.quadraticCurveTo(x + w, y, x + w, y + r);
   ctx.lineTo(x + w, y + h - r);
   ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
@@ -67,38 +58,39 @@ function canvasRoundRect(
 
 // ── component ─────────────────────────────────────────────────────────────────
 
-export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [pngLoading, setPngLoading] = useState(false);
+export default function ExportButtons({ campaigns, clientInfo, kpis, insights = [] }: Props) {
+  const [pdfLoading, setPdfLoading]   = useState(false);
+  const [pngLoading, setPngLoading]   = useState(false);
   const [pptxLoading, setPptxLoading] = useState(false);
 
   const exportPPTX = async () => {
     setPptxLoading(true);
     try {
-      const { exportPPTX: runExport } = await import("@/lib/exportPPTX");
-      await runExport(campaigns, clientInfo);
+      const { exportPPTX: run } = await import("@/lib/exportPPTX");
+      await run(campaigns, clientInfo);
     } catch (e) { console.error("PPTX error:", e); }
     finally { setPptxLoading(false); }
   };
 
-  // ── CSV ───────────────────────────────────────────────────────────────────
+  // ── CSV ──────────────────────────────────────────────────────────────────
   const exportCSV = () => {
-    const headers = ["Campaign","Spend","Impressions","Clicks","CTR","CPC","CPM","Conversions","ROAS"];
+    const headers = ["Campaign","Spend","Impressions","Clicks","CTR","CPC","CPM","CPA","Conversions","ROAS"];
     const rows = campaigns.map(c => [
       `"${c.name.replace(/"/g,'""')}"`,
       c.spend, c.impressions, c.clicks,
-      (c.ctr ?? 0).toFixed(2), (c.cpc ?? 0).toFixed(2), (c.cpm ?? 0).toFixed(2),
-      c.conversions, (c.roas ?? 0).toFixed(2),
+      (c.ctr??0).toFixed(2), (c.cpc??0).toFixed(2), (c.cpm??0).toFixed(2),
+      c.cpa > 0 ? (c.cpa).toFixed(2) : '',
+      c.conversions, (c.roas??0).toFixed(2),
     ]);
     const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }); // BOM for Excel Arabic
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `metriquill-${clientInfo.clientName || "report"}.csv`;
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = `metriquill-${clientInfo.clientName||"report"}.csv`;
     a.click(); URL.revokeObjectURL(url);
   };
 
-  // ── PNG ───────────────────────────────────────────────────────────────────
+  // ── PNG ──────────────────────────────────────────────────────────────────
   const exportPNG = async () => {
     setPngLoading(true);
     try {
@@ -106,447 +98,357 @@ export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
       const canvas = document.createElement("canvas");
       canvas.width = W; canvas.height = H;
       const ctx = canvas.getContext("2d")!;
-      const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor)
-        ? clientInfo.brandColor : "#2563EB";
-      const dark = darken(brand, 50);
-
-      // Load Inter + Amiri fonts
+      const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor) ? clientInfo.brandColor : "#2563EB";
+      const dark  = darken(brand, 50);
       try {
-        const [interFont, amiriFont] = await Promise.allSettled([
+        const [iF, aF] = await Promise.allSettled([
           new FontFace("Inter","url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2)").load(),
           new FontFace("Amiri","url(https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2)").load(),
         ]);
-        if (interFont.status === "fulfilled") document.fonts.add(interFont.value);
-        if (amiriFont.status === "fulfilled") document.fonts.add(amiriFont.value);
+        if (iF.status === "fulfilled") document.fonts.add(iF.value);
+        if (aF.status === "fulfilled") document.fonts.add(aF.value);
       } catch { /* fallback */ }
-
-      // ── Background: dark gradient with brand stripe ──
-      const grad = ctx.createLinearGradient(0, 0, W, H);
-      grad.addColorStop(0, "#0a0f1e");
-      grad.addColorStop(1, "#111827");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-
-      // Top brand stripe
-      ctx.fillStyle = brand;
-      ctx.fillRect(0, 0, W, 5);
-
-      // Large circle accent top-right
-      ctx.beginPath();
-      ctx.arc(W + 40, -40, 260, 0, Math.PI * 2);
-      ctx.fillStyle = brand + "18";
-      ctx.fill();
-
-      // Small circle bottom-left
-      ctx.beginPath();
-      ctx.arc(-30, H + 30, 160, 0, Math.PI * 2);
-      ctx.fillStyle = brand + "12";
-      ctx.fill();
-
-      // ── Logo ──
+      const grad = ctx.createLinearGradient(0,0,W,H);
+      grad.addColorStop(0,"#0a0f1e"); grad.addColorStop(1,"#111827");
+      ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = brand; ctx.fillRect(0,0,W,5);
+      ctx.beginPath(); ctx.arc(W+40,-40,260,0,Math.PI*2); ctx.fillStyle = brand+"18"; ctx.fill();
+      ctx.beginPath(); ctx.arc(-30,H+30,160,0,Math.PI*2); ctx.fillStyle = brand+"12"; ctx.fill();
       const logoY = 48;
       if (clientInfo.logoDataUrl) {
         try {
           const img = new Image();
-          await new Promise<void>((res, rej) => {
-            img.onload = () => res(); img.onerror = () => rej();
-            img.src = clientInfo.logoDataUrl;
-          });
+          await new Promise<void>((res,rej) => { img.onload=()=>res(); img.onerror=()=>rej(); img.src=clientInfo.logoDataUrl; });
           ctx.drawImage(img, 60, logoY, 110, 44);
         } catch { /* skip */ }
       }
-
-      // ── Client name ──
       const nameY = clientInfo.logoDataUrl ? 160 : 120;
-      const clientName = clientInfo.clientName || "Campaign Report";
+      const isAr  = hasArabic(clientInfo.clientName||"");
       ctx.fillStyle = "#ffffff";
-      const arabicName = hasArabic(clientName);
-      ctx.font = `bold 54px ${arabicName ? "Amiri" : "Inter"}, sans-serif`;
-      ctx.fillText(arabicName ? reverseArabic(clientName) : clientName, 60, nameY);
-
-      // Subline
-      ctx.font = "22px Inter, sans-serif";
-      ctx.fillStyle = "#64748b";
-      const period = clientInfo.dateFrom && clientInfo.dateTo
-        ? `${clientInfo.dateFrom}  \u2192  ${clientInfo.dateTo}`
-        : "Performance Summary";
-      ctx.fillText(period, 60, nameY + 40);
-
-      // Agency tag
-      if (clientInfo.agencyName) {
-        ctx.font = "16px Inter, sans-serif";
-        ctx.fillStyle = brand;
-        ctx.fillText(clientInfo.agencyName.toUpperCase(), 60, nameY + 72);
-      }
-
-      // ── KPI Cards (4) ──
+      ctx.font = `bold 54px ${isAr ? "Amiri" : "Inter"}, sans-serif`;
+      ctx.fillText(isAr ? reverseArabic(clientInfo.clientName||"") : (clientInfo.clientName||"Campaign Report"), 60, nameY);
+      ctx.font = "22px Inter, sans-serif"; ctx.fillStyle = "#64748b";
+      const period = clientInfo.dateFrom && clientInfo.dateTo ? `${clientInfo.dateFrom}  →  ${clientInfo.dateTo}` : "Performance Summary";
+      ctx.fillText(period, 60, nameY+40);
+      if (clientInfo.agencyName) { ctx.font="16px Inter,sans-serif"; ctx.fillStyle=brand; ctx.fillText(clientInfo.agencyName.toUpperCase(),60,nameY+72); }
       const cards = [
-        { label: "Total Spend", value: fmt(kpis.totalSpend, "currency", clientInfo.currency), accent: brand },
-        { label: "Avg ROAS",    value: fmt(kpis.avgROAS, "decimal") + "x",                  accent: "#10B981" },
-        { label: "Conversions", value: fmt(kpis.totalConversions, "number"),                 accent: "#8B5CF6" },
-        { label: "Avg CTR",     value: fmt(kpis.avgCTR, "percent"),                          accent: "#F59E0B" },
+        { label:"Total Spend",  value: fmt(kpis.totalSpend,"currency",clientInfo.currency), accent: brand },
+        { label:"Avg ROAS",     value: fmt(kpis.avgROAS,"decimal")+"x",                    accent:"#10B981" },
+        { label:"Avg CPA",      value: fmt(kpis.avgCPA,"currency",clientInfo.currency),    accent:"#F59E0B" },
+        { label:"Avg CTR",      value: fmt(kpis.avgCTR,"percent"),                         accent:"#8B5CF6" },
       ];
-      const cW = 245; const cH = 115; const cY = 460; const cGap = 20;
-      cards.forEach((card, i) => {
-        const x = 60 + i * (cW + cGap);
-        // Card glass bg
-        ctx.fillStyle = "#ffffff0d";
-        canvasRoundRect(ctx, x, cY, cW, cH, 12); ctx.fill();
-        // Top accent line
-        ctx.fillStyle = card.accent;
-        canvasRoundRect(ctx, x, cY, cW, 3, 1); ctx.fill();
-        // Label
-        ctx.fillStyle = "#64748b";
-        ctx.font = "14px Inter, sans-serif";
-        ctx.fillText(card.label, x + 18, cY + 30);
-        // Value
-        ctx.fillStyle = "#f1f5f9";
-        ctx.font = "bold 30px Inter, sans-serif";
-        ctx.fillText(card.value, x + 18, cY + 78);
+      const cW=245,cH=115,cY=460,cGap=20;
+      cards.forEach((card,i) => {
+        const x = 60+i*(cW+cGap);
+        ctx.fillStyle="#ffffff0d"; canvasRoundRect(ctx,x,cY,cW,cH,12); ctx.fill();
+        ctx.fillStyle=card.accent; canvasRoundRect(ctx,x,cY,cW,3,1); ctx.fill();
+        ctx.fillStyle="#64748b"; ctx.font="14px Inter,sans-serif"; ctx.fillText(card.label,x+18,cY+30);
+        ctx.fillStyle="#f1f5f9"; ctx.font="bold 30px Inter,sans-serif"; ctx.fillText(card.value,x+18,cY+78);
       });
-
-      // ── Footer ──
-      ctx.fillStyle = "#1e293b";
-      ctx.fillRect(0, H - 38, W, 38);
-      ctx.font = "13px Inter, sans-serif";
-      ctx.fillStyle = "#475569";
-      ctx.textAlign = "left";
-      ctx.fillText("Generated by MetriQuill Free  ·  metriquill.com/free", 60, H - 13);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#64748b";
-      ctx.fillText("Confidential", W - 60, H - 13);
-      ctx.textAlign = "left";
-
+      ctx.fillStyle="#1e293b"; ctx.fillRect(0,H-38,W,38);
+      ctx.font="13px Inter,sans-serif"; ctx.fillStyle="#475569"; ctx.textAlign="left";
+      ctx.fillText("Generated by MetriQuill Free  ·  metriquill.com/free",60,H-13);
+      ctx.textAlign="right"; ctx.fillStyle="#64748b"; ctx.fillText("Confidential",W-60,H-13); ctx.textAlign="left";
       canvas.toBlob(blob => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `metriquill-${clientInfo.clientName || "report"}.png`;
-        a.click(); URL.revokeObjectURL(url);
+        const a = document.createElement("a"); a.href=url; a.download=`metriquill-${clientInfo.clientName||"report"}.png`; a.click(); URL.revokeObjectURL(url);
       }, "image/png");
-    } catch (e) { console.error(e); }
-    finally { setPngLoading(false); }
+    } catch (e) { console.error(e); } finally { setPngLoading(false); }
   };
 
-  // ── PDF ───────────────────────────────────────────────────────────────────
+  // ── PDF ──────────────────────────────────────────────────────────────────
   const exportPDF = async () => {
     setPdfLoading(true);
     try {
       const { jsPDF } = await import("jspdf");
-      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const W = 210; const H = 297;
-      const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor)
-        ? clientInfo.brandColor : "#2563EB";
-      const [br, bg, bb] = hexToRgb(brand);
-      const [dr, dg, db] = hexToRgb(darken(brand, 40));
+      const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+      const W=210, H=297;
+      const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor) ? clientInfo.brandColor : "#2563EB";
+      const [br,bg,bb] = hexToRgb(brand);
+      const [dr,dg,db] = hexToRgb(darken(brand,40));
+      const cur = clientInfo.currency || "USD";
 
-      // ── Embed Amiri for Arabic ──
       let hasAmiri = false;
       const amiriB64 = await fetchAmiriBase64();
       if (amiriB64) {
-        try {
-          doc.addFileToVFS("Amiri-Regular.woff2", amiriB64);
-          doc.addFont("Amiri-Regular.woff2", "Amiri", "normal");
-          hasAmiri = true;
-        } catch { /* fallback to helvetica */ }
+        try { doc.addFileToVFS("Amiri-Regular.woff2",amiriB64); doc.addFont("Amiri-Regular.woff2","Amiri","normal"); hasAmiri=true; } catch { /**/ }
       }
+      const LF = (s:"bold"|"normal"="normal") => doc.setFont("helvetica",s);
+      const AF = () => hasAmiri ? doc.setFont("Amiri","normal") : LF();
 
-      const setLatinFont  = (style: "bold"|"normal" = "normal") =>
-        doc.setFont("helvetica", style);
-      const setArabicFont = () =>
-        hasAmiri ? doc.setFont("Amiri", "normal") : doc.setFont("helvetica", "normal");
-
-      const safeName = (name: string, maxLen = 38) => {
-        if (hasArabic(name) && hasAmiri) {
-          // Reverse for RTL rendering in LTR jsPDF
-          const rev = reverseArabic(name);
-          return rev.length > maxLen ? rev.slice(0, maxLen) + "..." : rev;
-        }
-        // Strip unrenderable chars for latin
-        const clean = name.replace(/[^\x00-\x7F\u00C0-\u024F]/g, "").trim()
-          || name.replace(/\s+/g," ").slice(0, maxLen);
-        return clean.length > maxLen ? clean.slice(0, maxLen) + "..." : clean;
+      const safeName = (name: string, maxLen=38) => {
+        if (hasArabic(name) && hasAmiri) { const r=reverseArabic(name); return r.length>maxLen?r.slice(0,maxLen)+"...":r; }
+        const clean = name.replace(/[^\x00-\x7F\u00C0-\u024F]/g,"").trim() || name.replace(/\s+/g," ").slice(0,maxLen);
+        return clean.length>maxLen?clean.slice(0,maxLen)+"...":clean;
       };
 
-      // ═══════════════════════════════════════════════
-      // PAGE 1 — COVER  (dark premium)
-      // ═══════════════════════════════════════════════
+      const pageFooter = (pageNum: number) => {
+        LF(); doc.setFontSize(7); doc.setTextColor(148,163,184);
+        doc.text("metriquill.com/free", W/2, H-8, {align:"center"});
+        doc.text(`${pageNum}`, W-20, H-8, {align:"right"});
+        doc.setFillColor(br,bg,bb); doc.rect(0,H-2,W,2,"F");
+      };
 
-      // Dark background
-      doc.setFillColor(10, 15, 30);
-      doc.rect(0, 0, W, H, "F");
-
-      // Brand colour block — left sidebar stripe
-      doc.setFillColor(br, bg, bb);
-      doc.rect(0, 0, 8, H, "F");
-
-      // Large circle accent top-right
-      doc.setFillColor(br, bg, bb);
-      doc.setGState(doc.GState({ opacity: 0.12 }));
-      doc.circle(W + 10, -10, 90, "F");
-      doc.setGState(doc.GState({ opacity: 0.07 }));
-      doc.circle(W - 10, 30, 60, "F");
-      doc.setGState(doc.GState({ opacity: 1 }));
-
-      // Bottom brand bar
-      doc.setFillColor(dr, dg, db);
-      doc.rect(0, H - 18, W, 18, "F");
-
-      // Logo
-      const logoX = 24; let logoBottom = 30;
-      if (clientInfo.logoDataUrl) {
-        try {
-          doc.addImage(clientInfo.logoDataUrl, "PNG", logoX, 22, 38, 16);
-          logoBottom = 46;
-        } catch {}
-      }
-
-      // "CAMPAIGN PERFORMANCE REPORT" label
-      doc.setFontSize(8); setLatinFont("bold");
-      doc.setTextColor(br, bg, bb);
-      doc.text("CAMPAIGN PERFORMANCE REPORT", logoX, logoBottom + 16);
-
-      // Thin rule
-      doc.setDrawColor(br, bg, bb); doc.setLineWidth(0.4);
-      doc.line(logoX, logoBottom + 20, W - 20, logoBottom + 20);
-
-      // Client name — large
-      const clientName = clientInfo.clientName || "Client Name";
-      const isAr = hasArabic(clientName);
-      doc.setTextColor(241, 245, 249);
-      doc.setFontSize(36);
-      if (isAr && hasAmiri) {
-        setArabicFont();
-        doc.text(reverseArabic(clientName), W - 20, logoBottom + 56, { align: "right" });
-      } else {
-        setLatinFont("bold");
-        const wrapped = doc.splitTextToSize(clientName, W - 44);
-        doc.text(wrapped, logoX, logoBottom + 56);
-      }
-      setLatinFont("normal");
-
-      // Agency line
-      if (clientInfo.agencyName) {
-        doc.setFontSize(11); doc.setTextColor(br, bg, bb);
-        const isArAg = hasArabic(clientInfo.agencyName);
-        if (isArAg && hasAmiri) {
-          setArabicFont();
-          doc.text(reverseArabic(clientInfo.agencyName), W - 20, logoBottom + 76, { align:"right" });
-          setLatinFont("normal");
-        } else {
-          doc.text(clientInfo.agencyName, logoX, logoBottom + 76);
-        }
-      }
-
-      // Period
-      if (clientInfo.dateFrom && clientInfo.dateTo) {
-        doc.setFontSize(10); doc.setTextColor(148, 163, 184);
-        doc.text(`${clientInfo.dateFrom}  to  ${clientInfo.dateTo}`, logoX, logoBottom + 90);
-      }
-
-      // ── KPI summary boxes on cover ──
-      const kpiBoxes = [
-        { label: "Total Spend",  value: fmt(kpis.totalSpend,"currency",clientInfo.currency) },
-        { label: "Avg ROAS",     value: fmt(kpis.avgROAS,"decimal") + "x" },
-        { label: "Conversions",  value: fmt(kpis.totalConversions,"number") },
-        { label: "Avg CTR",      value: fmt(kpis.avgCTR,"percent") },
-        { label: "Impressions",  value: fmt(kpis.totalImpressions,"number") },
-        { label: "Avg CPC",      value: fmt(kpis.avgCPC,"currency",clientInfo.currency) },
+      // ══════════════════════════════════════════════
+      // PAGE 1 — COVER
+      // ══════════════════════════════════════════════
+      doc.setFillColor(10,15,30); doc.rect(0,0,W,H,"F");
+      doc.setFillColor(br,bg,bb); doc.rect(0,0,8,H,"F");
+      doc.setFillColor(br,bg,bb); doc.setGState(doc.GState({opacity:0.12})); doc.circle(W+10,-10,90,"F");
+      doc.setGState(doc.GState({opacity:0.07})); doc.circle(W-10,30,60,"F");
+      doc.setGState(doc.GState({opacity:1}));
+      doc.setFillColor(dr,dg,db); doc.rect(0,H-18,W,18,"F");
+      let logoBottom=30;
+      if (clientInfo.logoDataUrl) { try { doc.addImage(clientInfo.logoDataUrl,"PNG",24,22,38,16); logoBottom=46; } catch {/**/ } }
+      doc.setFontSize(8); LF("bold"); doc.setTextColor(br,bg,bb); doc.text("CAMPAIGN PERFORMANCE REPORT",24,logoBottom+16);
+      doc.setDrawColor(br,bg,bb); doc.setLineWidth(0.4); doc.line(24,logoBottom+20,W-20,logoBottom+20);
+      const cName = clientInfo.clientName||"Client Name";
+      const isArC = hasArabic(cName);
+      doc.setTextColor(241,245,249); doc.setFontSize(36);
+      if (isArC && hasAmiri) { AF(); doc.text(reverseArabic(cName),W-20,logoBottom+56,{align:"right"}); } else { LF("bold"); doc.text(doc.splitTextToSize(cName,W-44),24,logoBottom+56); }
+      LF("normal");
+      if (clientInfo.agencyName) { doc.setFontSize(11); doc.setTextColor(br,bg,bb); const isArA=hasArabic(clientInfo.agencyName); if(isArA&&hasAmiri){AF();doc.text(reverseArabic(clientInfo.agencyName),W-20,logoBottom+76,{align:"right"});LF("normal");}else{doc.text(clientInfo.agencyName,24,logoBottom+76);} }
+      if (clientInfo.dateFrom&&clientInfo.dateTo) { doc.setFontSize(10); doc.setTextColor(148,163,184); doc.text(`${clientInfo.dateFrom}  to  ${clientInfo.dateTo}`,24,logoBottom+90); }
+      // KPI summary on cover
+      const coverKPIs = [
+        {label:"Total Spend",  value:fmt(kpis.totalSpend,"currency",cur)},
+        {label:"Avg ROAS",     value:fmt(kpis.avgROAS,"decimal")+"x"},
+        {label:"Avg CPA",      value:fmt(kpis.avgCPA,"currency",cur)},
+        {label:"Conversions",  value:fmt(kpis.totalConversions,"number")},
+        {label:"Impressions",  value:fmt(kpis.totalImpressions,"number")},
+        {label:"Avg CTR",      value:fmt(kpis.avgCTR,"percent")},
       ];
-      const bCols = 3; const bW = 54; const bH = 28; const bGap = 8;
-      const bStartX = logoX; const bStartY = H - 18 - 10 - (Math.ceil(kpiBoxes.length / bCols)) * (bH + bGap);
-      kpiBoxes.forEach(({ label, value }, i) => {
-        const col = i % bCols; const row = Math.floor(i / bCols);
-        const x = bStartX + col * (bW + bGap);
-        const y = bStartY + row * (bH + bGap);
-        doc.setFillColor(255,255,255); doc.setGState(doc.GState({ opacity: 0.06 }));
-        doc.roundedRect(x, y, bW, bH, 2, 2, "F");
-        doc.setGState(doc.GState({ opacity: 1 }));
-        doc.setFillColor(br, bg, bb); doc.rect(x, y, 2, bH, "F");
-        doc.setFontSize(6); setLatinFont("normal"); doc.setTextColor(148, 163, 184);
-        doc.text(label, x + 5, y + 8);
-        doc.setFontSize(11); setLatinFont("bold"); doc.setTextColor(241, 245, 249);
-        doc.text(value, x + 5, y + 20);
+      const bW=54,bH=28,bGap=8,bCols=3;
+      const bSX=24, bSY=H-18-10-(Math.ceil(coverKPIs.length/bCols))*(bH+bGap);
+      coverKPIs.forEach(({label,value},i)=>{
+        const col=i%bCols, row=Math.floor(i/bCols);
+        const x=bSX+col*(bW+bGap), y=bSY+row*(bH+bGap);
+        doc.setFillColor(255,255,255); doc.setGState(doc.GState({opacity:0.06})); doc.roundedRect(x,y,bW,bH,2,2,"F"); doc.setGState(doc.GState({opacity:1}));
+        doc.setFillColor(br,bg,bb); doc.rect(x,y,2,bH,"F");
+        doc.setFontSize(6); LF("normal"); doc.setTextColor(148,163,184); doc.text(label,x+5,y+8);
+        doc.setFontSize(11); LF("bold"); doc.setTextColor(241,245,249); doc.text(value,x+5,y+20);
       });
+      doc.setFontSize(7); LF("normal"); doc.setTextColor(100,116,139);
+      doc.text("Generated by MetriQuill Free  ·  metriquill.com/free  ·  Confidential",24,H-6);
 
-      // Footer text
-      doc.setFontSize(7); setLatinFont("normal"); doc.setTextColor(100, 116, 139);
-      doc.text("Generated by MetriQuill Free  ·  metriquill.com/free  ·  Confidential", logoX, H - 6);
-
-      // ═══════════════════════════════════════════════
-      // PAGE 2 — PERFORMANCE SUMMARY
-      // ═══════════════════════════════════════════════
-      doc.addPage();
-      // White background with subtle top band
-      doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F");
-      doc.setFillColor(br,bg,bb); doc.rect(0,0,W,2,"F");
-      doc.setFillColor(248,250,252); doc.rect(0,2,W,40,"F");
-
-      doc.setFontSize(20); setLatinFont("bold"); doc.setTextColor(15,23,42);
-      doc.text("Performance Summary", 20, 26);
-      doc.setFontSize(9); setLatinFont("normal"); doc.setTextColor(100,116,139);
-      if (clientInfo.dateFrom && clientInfo.dateTo)
-        doc.text(`${clientInfo.dateFrom}  to  ${clientInfo.dateTo}`, 20, 36);
-
-      // 10 KPI cards in 2x5 grid
-      const kpiAll = [
-        { label: "Total Spend",    value: fmt(kpis.totalSpend,"currency",clientInfo.currency),    color: [br,bg,bb] as [number,number,number] },
-        { label: "Avg ROAS",       value: fmt(kpis.avgROAS,"decimal")+"x",                        color: [16,185,129] as [number,number,number] },
-        { label: "Impressions",    value: fmt(kpis.totalImpressions,"number"),                     color: [139,92,246] as [number,number,number] },
-        { label: "Reach",          value: fmt(kpis.totalReach,"number"),                           color: [245,158,11] as [number,number,number] },
-        { label: "Avg Frequency",  value: fmt(kpis.avgFrequency,"decimal")+"x",                   color: [239,68,68] as [number,number,number] },
-        { label: "Total Clicks",   value: fmt(kpis.totalClicks,"number"),                          color: [br,bg,bb] as [number,number,number] },
-        { label: "Avg CTR",        value: fmt(kpis.avgCTR,"percent"),                             color: [16,185,129] as [number,number,number] },
-        { label: "Avg CPC",        value: fmt(kpis.avgCPC,"currency",clientInfo.currency),        color: [139,92,246] as [number,number,number] },
-        { label: "CPM",            value: fmt(kpis.avgCPM,"currency",clientInfo.currency),        color: [245,158,11] as [number,number,number] },
-        { label: "Conversions",    value: fmt(kpis.totalConversions,"number"),                     color: [239,68,68] as [number,number,number] },
-      ];
-      const kW = 82; const kH = 26; const kGapX = 7; const kGapY = 8;
-      const kStartX = 20; const kStartY = 52;
-      kpiAll.forEach(({ label, value, color }, i) => {
-        const col = i % 2; const row = Math.floor(i / 2);
-        const x = kStartX + col * (kW + kGapX);
-        const y = kStartY + row * (kH + kGapY);
-        // Card shadow illusion
-        doc.setFillColor(226,232,240); doc.roundedRect(x+1,y+1,kW,kH,2,2,"F");
-        doc.setFillColor(255,255,255); doc.roundedRect(x,y,kW,kH,2,2,"F");
-        // Left accent
-        doc.setFillColor(...color); doc.rect(x,y,2,kH,"F");
-        // Label
-        doc.setFontSize(6.5); setLatinFont("normal"); doc.setTextColor(100,116,139);
-        doc.text(label, x+6, y+9);
-        // Value
-        doc.setFontSize(13); setLatinFont("bold"); doc.setTextColor(...color);
-        doc.text(value, x+6, y+20);
-      });
-
-      // ── Insights section on page 2 ──
-      const insightY = kStartY + 5 * (kH + kGapY) + 12;
-      doc.setFillColor(248,250,252); doc.roundedRect(20, insightY, W-40, 8, 2, 2, "F");
-      doc.setFontSize(10); setLatinFont("bold"); doc.setTextColor(15,23,42);
-      doc.text("Campaign Insights", 26, insightY + 5.5);
-
-      // Top 3 performers
-      const sorted = [...campaigns].sort((a,b) => (b.roas??0)-(a.roas??0));
-      let iY = insightY + 14;
-      sorted.slice(0, 3).forEach((c, i) => {
-        const colors: [number,number,number][] = [[16,185,129],[245,158,11],[239,68,68]];
-        const col = colors[i];
-        doc.setFillColor(...col); doc.circle(23, iY - 1, 2, "F");
-        doc.setFontSize(8); setLatinFont("normal"); doc.setTextColor(15,23,42);
-        const nm = safeName(c.name, 50);
-        const isArNm = hasArabic(c.name);
-        if (isArNm && hasAmiri) { setArabicFont(); }
-        doc.text(nm, 28, iY);
-        setLatinFont("normal");
-        doc.setTextColor(100,116,139);
-        doc.text(`ROAS ${(c.roas??0).toFixed(1)}x  ·  Spend ${fmt(c.spend,"currency",clientInfo.currency)}`, W - 20, iY, { align: "right" });
-        iY += 10;
-      });
-
-      // Page footer
-      doc.setFontSize(7); setLatinFont("normal"); doc.setTextColor(148,163,184);
-      doc.text("metriquill.com/free", W/2, H-8, { align:"center" });
-      doc.setFillColor(br,bg,bb); doc.rect(0,H-2,W,2,"F");
-
-      // ═══════════════════════════════════════════════
-      // PAGE 3 — CAMPAIGN BREAKDOWN TABLE
-      // ═══════════════════════════════════════════════
+      // ══════════════════════════════════════════════
+      // PAGE 2 — EXECUTIVE SUMMARY + BENCHMARKS
+      // ══════════════════════════════════════════════
       doc.addPage();
       doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F");
       doc.setFillColor(br,bg,bb); doc.rect(0,0,W,2,"F");
       doc.setFillColor(248,250,252); doc.rect(0,2,W,40,"F");
+      doc.setFontSize(20); LF("bold"); doc.setTextColor(15,23,42); doc.text("Executive Summary",20,26);
+      doc.setFontSize(9); LF("normal"); doc.setTextColor(100,116,139);
+      if (clientInfo.dateFrom&&clientInfo.dateTo) doc.text(`${clientInfo.dateFrom}  to  ${clientInfo.dateTo}`,20,36);
 
-      doc.setFontSize(20); setLatinFont("bold"); doc.setTextColor(15,23,42);
-      doc.text("Campaign Breakdown", 20, 26);
-      doc.setFontSize(9); setLatinFont("normal"); doc.setTextColor(100,116,139);
-      doc.text(`${campaigns.length} campaigns`, 20, 36);
+      // Narrative summary
+      const totalSpend = kpis.totalSpend||0;
+      const avgROAS    = kpis.avgROAS||0;
+      const totalConv  = kpis.totalConversions||0;
+      const avgCTR     = kpis.avgCTR||0;
+      const avgCPA     = kpis.avgCPA||0;
+      const roasSorted = [...campaigns].filter(c=>c.roas>0).sort((a,b)=>b.roas-a.roas);
+      const topCampaign = roasSorted[0];
+      const summaryLines = [
+        `Total ad spend for this period: ${fmt(totalSpend,"currency",cur)} across ${campaigns.length} campaigns.`,
+        avgROAS>=3
+          ? `Overall ROAS of ${avgROAS.toFixed(2)}x is above the industry average of 2.19x — strong account performance.`
+          : avgROAS>=1.5
+          ? `Overall ROAS of ${avgROAS.toFixed(2)}x is near the industry average of 2.19x. Optimization opportunities exist.`
+          : `Overall ROAS of ${avgROAS.toFixed(2)}x is below the industry average of 2.19x. Immediate review recommended.`,
+        totalConv>0 ? `Generated ${fmt(totalConv,"number")} conversions at an average cost of ${fmt(avgCPA,"currency",cur)} per acquisition.` : `No conversion data available for this period.`,
+        topCampaign ? `Top performer: "${topCampaign.name}" at ${topCampaign.roas.toFixed(1)}x ROAS.` : "",
+        avgCTR>=1.49 ? `Average CTR of ${avgCTR.toFixed(2)}% is above the industry benchmark of 1.49%.` : `Average CTR of ${avgCTR.toFixed(2)}% is below the industry benchmark of 1.49% — creative refresh may help.`,
+      ].filter(Boolean);
+
+      let summaryY = 52;
+      summaryLines.forEach(line => {
+        doc.setFontSize(9); LF("normal"); doc.setTextColor(51,65,85);
+        const wrapped = doc.splitTextToSize(line, W-50);
+        doc.text(wrapped, 20, summaryY);
+        summaryY += wrapped.length * 6 + 4;
+      });
+
+      // KPI + Benchmark table
+      summaryY += 8;
+      doc.setFillColor(248,250,252); doc.roundedRect(20,summaryY,W-40,8,2,2,"F");
+      doc.setFontSize(10); LF("bold"); doc.setTextColor(15,23,42); doc.text("KPI vs Industry Benchmarks",26,summaryY+5.5);
+      summaryY += 12;
+
+      const benchRows = [
+        { label:"Avg CTR",      value:fmt(kpis.avgCTR,"percent"),              benchmark:"0.90%",  good: (kpis.avgCTR||0)>=BENCHMARKS.ctr.good,   bad:(kpis.avgCTR||0)<BENCHMARKS.ctr.poor },
+        { label:"Avg CPC",      value:fmt(kpis.avgCPC,"currency",cur),         benchmark:"$1.72",  good:(kpis.avgCPC||0)<=BENCHMARKS.cpc.good,    bad:(kpis.avgCPC||0)>BENCHMARKS.cpc.poor },
+        { label:"Avg CPM",      value:fmt(kpis.avgCPM,"currency",cur),         benchmark:"$14.00", good:(kpis.avgCPM||0)<=BENCHMARKS.cpm.good,    bad:(kpis.avgCPM||0)>BENCHMARKS.cpm.poor },
+        { label:"Avg ROAS",     value:fmt(kpis.avgROAS,"decimal")+"x",         benchmark:"2.19x",  good:(kpis.avgROAS||0)>=BENCHMARKS.roas.good,  bad:(kpis.avgROAS||0)<BENCHMARKS.roas.poor },
+        { label:"Avg Frequency",value:fmt(kpis.avgFrequency,"decimal")+"x",   benchmark:"<2.5x",  good:(kpis.avgFrequency||0)<2.0,              bad:(kpis.avgFrequency||0)>=BENCHMARKS.frequency.warn },
+      ];
+
+      // Header
+      doc.setFontSize(7.5); LF("bold"); doc.setTextColor(100,116,139);
+      doc.text("Metric",20,summaryY); doc.text("Your Result",100,summaryY,{align:"right"}); doc.text("Industry Avg",135,summaryY,{align:"right"}); doc.text("Signal",165,summaryY,{align:"right"});
+      doc.setDrawColor(226,232,240); doc.setLineWidth(0.3); doc.line(20,summaryY+2,W-20,summaryY+2);
+      summaryY += 8;
+
+      benchRows.forEach(row => {
+        if (row.label==="Avg Frequency" && (kpis.avgFrequency||0)===0) return;
+        doc.setFontSize(8.5); LF("normal"); doc.setTextColor(15,23,42);
+        doc.text(row.label,20,summaryY);
+        LF("bold"); doc.text(row.value,100,summaryY,{align:"right"});
+        LF("normal"); doc.setTextColor(100,116,139); doc.text(row.benchmark,135,summaryY,{align:"right"});
+        const sigColor: [number,number,number] = row.good?[5,150,105]:row.bad?[220,38,38]:[100,116,139];
+        const sigText = row.good?"▲ Above avg":row.bad?"▼ Below avg":"— On track";
+        doc.setTextColor(...sigColor); LF("bold"); doc.text(sigText,165,summaryY,{align:"right"});
+        doc.setDrawColor(241,245,249); doc.setLineWidth(0.2); doc.line(20,summaryY+3,W-20,summaryY+3);
+        summaryY += 10;
+      });
+      pageFooter(2);
+
+      // ══════════════════════════════════════════════
+      // PAGE 3 — CAMPAIGN TABLE (with CPA + badges)
+      // ══════════════════════════════════════════════
+      doc.addPage();
+      doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F");
+      doc.setFillColor(br,bg,bb); doc.rect(0,0,W,2,"F");
+      doc.setFillColor(248,250,252); doc.rect(0,2,W,40,"F");
+      doc.setFontSize(20); LF("bold"); doc.setTextColor(15,23,42); doc.text("Campaign Breakdown",20,26);
+      doc.setFontSize(9); LF("normal"); doc.setTextColor(100,116,139); doc.text(`${campaigns.length} campaigns`,20,36);
 
       // Table header
-      const tCols = ["Campaign","Spend","Impressions","CTR","CPC","ROAS"];
-      const tX    = [20, 95, 122, 152, 167, 187];
+      const tCols = ["Campaign","Spend","Impr.","CTR","CPC","CPA","Conv.","ROAS"];
+      const tX    = [20,90,115,137,153,167,181,193];
       const tHY   = 50;
-      doc.setFillColor(15,23,42); doc.rect(20, tHY - 5, W-40, 10, "F");
-      doc.setFontSize(7); setLatinFont("bold"); doc.setTextColor(255,255,255);
-      tCols.forEach((col, i) => doc.text(col, tX[i], tHY));
+      doc.setFillColor(15,23,42); doc.rect(20,tHY-5,W-40,10,"F");
+      doc.setFontSize(6.5); LF("bold"); doc.setTextColor(255,255,255);
+      tCols.forEach((col,i) => doc.text(col,tX[i],tHY));
 
-      // Table rows
-      campaigns.forEach((c, i) => {
-        const rowY = tHY + 10 + i * 11;
-        if (rowY > H - 20) return;
-
-        // Alternating row bg
-        if (i % 2 === 0) {
-          doc.setFillColor(248,250,252); doc.rect(20, rowY - 6, W-40, 11, "F");
-        }
-
-        // ROAS color coding
-        const roasVal = c.roas ?? 0;
-        const roasRgb: [number,number,number] = roasVal >= 3
-          ? [5,150,105] : roasVal >= 1.5 ? [217,119,6] : [220,38,38];
-
-        // Performance dot
-        doc.setFillColor(...roasRgb); doc.circle(22, rowY - 1.5, 1.5, "F");
-
-        // Campaign name — Arabic or Latin
+      campaigns.forEach((c,i) => {
+        const rowY = tHY+10+i*12;
+        if (rowY>H-30) return;
+        if (i%2===0) { doc.setFillColor(248,250,252); doc.rect(20,rowY-6,W-40,12,"F"); }
+        const badge    = getCampaignBadge(c);
+        const roasVal  = c.roas??0;
+        const roasRgb: [number,number,number] = roasVal>=3?[5,150,105]:roasVal>=1.5?[217,119,6]:[220,38,38];
+        // dot
+        doc.setFillColor(...roasRgb); doc.circle(22,rowY-1.5,1.5,"F");
+        // name
         const isArRow = hasArabic(c.name);
-        const rowName = safeName(c.name, 32);
-        doc.setFontSize(7.5);
-        if (isArRow && hasAmiri) {
-          setArabicFont(); doc.setTextColor(15,23,42);
-          doc.text(rowName, tX[0] + 5, rowY);
-          setLatinFont("normal");
-        } else {
-          setLatinFont("normal"); doc.setTextColor(15,23,42);
-          doc.text(rowName, tX[0] + 5, rowY);
+        const rowName = safeName(c.name,28);
+        doc.setFontSize(7); isArRow&&hasAmiri ? (AF(),doc.setTextColor(15,23,42),doc.text(rowName,tX[0]+5,rowY),LF("normal")) : (LF("normal"),doc.setTextColor(15,23,42),doc.text(rowName,tX[0]+5,rowY));
+        // badge
+        if (badge) {
+          const badgeColors: Record<string,[number,number,number]> = { TOP:[5,150,105], REVIEW:[220,38,38], WATCH:[217,119,6] };
+          const [bR,bG,bBl] = badgeColors[badge]||[100,116,139];
+          doc.setFillColor(bR,bG,bBl); doc.setGState(doc.GState({opacity:0.15})); doc.roundedRect(tX[0]+5+doc.getTextWidth(rowName)+2,rowY-5,badge.length*2.2+4,6,1,1,"F"); doc.setGState(doc.GState({opacity:1}));
+          doc.setFontSize(5); LF("bold"); doc.setTextColor(bR,bG,bBl); doc.text(badge,tX[0]+5+doc.getTextWidth(rowName)+4,rowY-1);
         }
-
-        // Numeric columns
-        doc.setFontSize(7.5); setLatinFont("normal"); doc.setTextColor(51,65,85);
-        doc.text(fmt(c.spend,"currency",clientInfo.currency), tX[1], rowY);
-        doc.text(fmt(c.impressions,"number"), tX[2], rowY);
-        doc.text(fmt(c.ctr,"percent"), tX[3], rowY);
-        doc.text(fmt(c.cpc,"currency",clientInfo.currency), tX[4], rowY);
-
+        // numeric cols
+        doc.setFontSize(7); LF("normal"); doc.setTextColor(51,65,85);
+        doc.text(fmt(c.spend,"currency",cur),tX[1],rowY);
+        doc.text(fmt(c.impressions,"number"),tX[2],rowY);
+        // CTR — color coded
+        const ctrRgb: [number,number,number] = c.ctr>=1.49?[5,150,105]:c.ctr<0.72?[220,38,38]:[51,65,85];
+        doc.setTextColor(...ctrRgb); doc.text(fmt(c.ctr,"percent"),tX[3],rowY);
+        doc.setTextColor(51,65,85);
+        doc.text(fmt(c.cpc,"currency",cur),tX[4],rowY);
+        doc.text(c.cpa>0?fmt(c.cpa,"currency",cur):"—",tX[5],rowY);
+        doc.text(fmt(c.conversions,"number"),tX[6],rowY);
         // ROAS badge
-        const roasText = roasVal > 0 ? fmt(roasVal,"decimal") + "x" : "—";
-        doc.setFillColor(...roasRgb);
-        doc.setGState(doc.GState({ opacity: 0.12 }));
-        doc.roundedRect(tX[5] - 1, rowY - 5, 20, 7, 1.5, 1.5, "F");
-        doc.setGState(doc.GState({ opacity: 1 }));
-        doc.setFontSize(7); setLatinFont("bold"); doc.setTextColor(...roasRgb);
-        doc.text(roasText, tX[5] + 1, rowY);
+        const roasText = roasVal>0?fmt(roasVal,"decimal")+"x":"—";
+        doc.setFillColor(...roasRgb); doc.setGState(doc.GState({opacity:0.12})); doc.roundedRect(tX[7]-1,rowY-5,18,7,1.5,1.5,"F"); doc.setGState(doc.GState({opacity:1}));
+        doc.setFontSize(6.5); LF("bold"); doc.setTextColor(...roasRgb); doc.text(roasText,tX[7]+1,rowY);
       });
 
-      // Table border bottom
-      doc.setDrawColor(226,232,240); doc.setLineWidth(0.3);
-      const lastRowY = tHY + 10 + Math.min(campaigns.length, Math.floor((H-40-tHY)/11)) * 11;
-      doc.line(20, lastRowY, W-20, lastRowY);
+      // Legend
+      const legY = tHY+10+Math.min(campaigns.length,Math.floor((H-40-tHY)/12))*12+8;
+      const legends = [{label:"TOP",color:[5,150,105] as [number,number,number],desc:"ROAS ≥3x"},{label:"REVIEW",color:[220,38,38] as [number,number,number],desc:"ROAS <1.5x"},{label:"WATCH",color:[217,119,6] as [number,number,number],desc:"Frequency ≥2.5x"}];
+      let legX=20;
+      legends.forEach(l => {
+        doc.setFontSize(6); LF("bold"); doc.setTextColor(...l.color); doc.text(l.label,legX,legY);
+        legX+=doc.getTextWidth(l.label)+2;
+        doc.setFontSize(6); LF("normal"); doc.setTextColor(100,116,139); doc.text(l.desc,legX,legY);
+        legX+=doc.getTextWidth(l.desc)+12;
+      });
+      pageFooter(3);
 
-      // Page footer
-      doc.setFontSize(7); setLatinFont("normal"); doc.setTextColor(148,163,184);
-      doc.text("metriquill.com/free", W/2, H-8, { align:"center" });
-      doc.setFillColor(br,bg,bb); doc.rect(0,H-2,W,2,"F");
+      // ══════════════════════════════════════════════
+      // PAGE 4 — INSIGHTS
+      // ══════════════════════════════════════════════
+      doc.addPage();
+      doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F");
+      doc.setFillColor(br,bg,bb); doc.rect(0,0,W,2,"F");
+      doc.setFillColor(248,250,252); doc.rect(0,2,W,40,"F");
+      doc.setFontSize(20); LF("bold"); doc.setTextColor(15,23,42); doc.text("Campaign Insights",20,26);
+      doc.setFontSize(9); LF("normal"); doc.setTextColor(100,116,139); doc.text("Rules-based analysis using 2025 industry benchmarks",20,36);
 
-      doc.save(`metriquill-${clientInfo.clientName || "report"}.pdf`);
-    } catch (e) {
-      console.error("PDF error:", e);
-    } finally {
-      setPdfLoading(false);
-    }
+      const insightAccents: [number,number,number][] = [[16,185,129],[239,68,68],[245,158,11],[245,158,11],[99,102,241],[16,185,129]];
+      let insY = 54;
+      insights.forEach((text, i) => {
+        const [iR,iG,iB] = insightAccents[i % insightAccents.length];
+        // Card bg
+        doc.setFillColor(248,250,252); doc.roundedRect(20,insY,W-40,2,1,1,"F"); // top rule
+        doc.setFillColor(iR,iG,iB); doc.rect(20,insY,3,30,"F");
+        doc.setFillColor(248,250,252); doc.roundedRect(23,insY,W-43,30,0,0,"F");
+        // Number
+        doc.setFontSize(8); LF("bold"); doc.setTextColor(iR,iG,iB); doc.text(`0${i+1}`,26,insY+10);
+        // Text — strip emoji for PDF
+        const clean = text.replace(/[\u{1F000}-\u{1FFFF}]|[\u2600-\u27FF]|⚠️|⛔|🚀|🔁|💰|📉|📊/gu,"").trim();
+        const wrapped = doc.splitTextToSize(clean, W-60);
+        doc.setFontSize(8.5); LF("normal"); doc.setTextColor(15,23,42); doc.text(wrapped,36,insY+10);
+        const blockH = Math.max(30, wrapped.length*5.5+10);
+        insY += blockH+6;
+      });
+
+      if (insights.length===0) {
+        doc.setFontSize(9); LF("normal"); doc.setTextColor(100,116,139); doc.text("No insights generated.",20,60);
+      }
+      pageFooter(4);
+
+      // ══════════════════════════════════════════════
+      // PAGE 5 — RECOMMENDATIONS
+      // ══════════════════════════════════════════════
+      doc.addPage();
+      doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F");
+      doc.setFillColor(br,bg,bb); doc.rect(0,0,W,2,"F");
+      doc.setFillColor(248,250,252); doc.rect(0,2,W,40,"F");
+      doc.setFontSize(20); LF("bold"); doc.setTextColor(15,23,42); doc.text("Recommendations",20,26);
+      doc.setFontSize(9); LF("normal"); doc.setTextColor(100,116,139); doc.text("Suggested actions for the next reporting period",20,36);
+
+      const recs = generateRecommendations(campaigns, cur);
+      let recY = 54;
+      recs.forEach((rec, i) => {
+        const bulletColors: [number,number,number][] = [[5,150,105],[220,38,38],[245,158,11],[99,102,241],[59,130,246]];
+        const [rR,rG,rB] = bulletColors[i%bulletColors.length];
+        doc.setFillColor(rR,rG,rB); doc.circle(24,recY-1,2.5,"F");
+        doc.setFillColor(rR,rG,rB); doc.setGState(doc.GState({opacity:0.06})); doc.roundedRect(20,recY-8,W-40,20,3,3,"F"); doc.setGState(doc.GState({opacity:1}));
+        const wrapped = doc.splitTextToSize(rec, W-55);
+        doc.setFontSize(9); LF("normal"); doc.setTextColor(15,23,42); doc.text(wrapped,30,recY);
+        recY += wrapped.length*5.5+14;
+      });
+
+      // Pro upsell box
+      recY += 4;
+      doc.setFillColor(br,bg,bb); doc.setGState(doc.GState({opacity:0.08})); doc.roundedRect(20,recY,W-40,28,4,4,"F"); doc.setGState(doc.GState({opacity:1}));
+      doc.setFillColor(br,bg,bb); doc.rect(20,recY,3,28,"F");
+      doc.setFontSize(10); LF("bold"); doc.setTextColor(br,bg,bb); doc.text("Upgrade to MetriQuill Pro",26,recY+10);
+      doc.setFontSize(8.5); LF("normal"); doc.setTextColor(51,65,85);
+      doc.text("Get AI-powered analysis, budget reallocation recommendations, and industry-specific benchmarks.",26,recY+20);
+
+      pageFooter(5);
+
+      doc.save(`metriquill-${clientInfo.clientName||"report"}.pdf`);
+    } catch (e) { console.error("PDF error:",e); }
+    finally { setPdfLoading(false); }
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
   const btnStyle = (primary?: boolean, gradient?: boolean): React.CSSProperties => ({
     padding: "11px 22px", borderRadius: 8, fontWeight: 600, fontSize: 14,
-    cursor: "pointer", border: primary || gradient ? "none" : "1px solid var(--border)",
-    background: gradient
-      ? "linear-gradient(135deg,#1e40af,#7c3aed)"
-      : primary ? "var(--blue)" : "var(--surface)",
-    color: primary || gradient ? "white" : "var(--text)",
-    display: "flex", alignItems: "center", gap: 8,
-    textDecoration: "none",
+    cursor: "pointer", border: primary||gradient ? "none" : "1px solid var(--border)",
+    background: gradient ? "linear-gradient(135deg,#1e40af,#7c3aed)" : primary ? "var(--blue)" : "var(--surface)",
+    color: primary||gradient ? "white" : "var(--text)",
+    display: "flex", alignItems: "center", gap: 8, textDecoration: "none",
   });
 
   return (
@@ -557,22 +459,22 @@ export default function ExportButtons({ campaigns, clientInfo, kpis }: Props) {
     }}>
       <span style={{ fontWeight: 600, fontSize: 15, marginRight: 8 }}>Export:</span>
       <button onClick={exportPDF} disabled={pdfLoading} style={btnStyle(true)}>
-        <span style={{ display:"inline-block" }}>{pdfLoading ? "⏳" : "📄"}</span>
-        {pdfLoading ? "Generating PDF…" : "Download PDF"}
+        <span>{pdfLoading ? "⏳" : "📄"}</span>
+        {pdfLoading ? "Generating PDF…" : "Download PDF (5 pages)"}
       </button>
       <button onClick={exportPPTX} disabled={pptxLoading} style={btnStyle()}>
-        <span style={{ display:"inline-block" }}>{pptxLoading ? "⏳" : "📊"}</span>
-        {pptxLoading ? "Generating PPTX…" : "Export PowerPoint"}
+        <span>{pptxLoading ? "⏳" : "📊"}</span>
+        {pptxLoading ? "Generating…" : "Export PowerPoint"}
       </button>
       <button onClick={exportPNG} disabled={pngLoading} style={btnStyle()}>
-        <span style={{ display:"inline-block" }}>{pngLoading ? "⏳" : "🖼️"}</span>
-        {pngLoading ? "Generating PNG…" : "Export PNG"}
+        <span>{pngLoading ? "⏳" : "🖼️"}</span>
+        {pngLoading ? "Generating…" : "Export PNG"}
       </button>
       <button onClick={exportCSV} style={btnStyle()}>📊 Export CSV</button>
       <a
         href="https://metriquill.com?utm_source=metriquill-free&utm_medium=export-bar&utm_campaign=upgrade"
         target="_blank" rel="noopener noreferrer"
-        style={{ ...btnStyle(false, true), marginLeft: "auto" }}
+        style={{ ...btnStyle(false,true), marginLeft: "auto" }}
       >
         ⚡ Try MetriQuill Pro
       </a>

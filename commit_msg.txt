@@ -1,1 +1,1 @@
-fix: dynamic import Charts and ExportButtons to prevent SSR crash
+feat: health dots on KPI cells, dont-react warnings in insights

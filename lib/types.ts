@@ -18,6 +18,7 @@ export interface CampaignData {
   cpm: number;
   conversions: number;
   roas: number;
+  cpa: number;        // derived: spend / conversions
   reach?: number;
   frequency?: number;
   status?: string;
@@ -32,6 +33,7 @@ export interface KPISummary {
   avgCPM: number;
   totalConversions: number;
   avgROAS: number;
+  avgCPA: number;     // total spend / total conversions
   avgFrequency: number;
   totalReach: number;
 }

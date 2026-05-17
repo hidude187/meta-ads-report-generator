@@ -10,7 +10,7 @@ interface Props {
   stepDone: boolean;
 }
 
-const CURRENCIES = ["USD", "EUR", "DZD", "SAR", "AED"];
+const CURRENCIES = ["DZD", "USD", "EUR", "SAR", "AED", "GBP", "MAD", "TND", "EGP", "TRY"];
 
 export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone }: Props) {
   const logoRef = useRef<HTMLInputElement>(null);
@@ -40,8 +40,11 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
           background: stepDone ? "var(--green)" : "var(--blue)",
           color: "white", display: "flex", alignItems: "center",
           justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0
-        }}>1</div>
+        }}>
+          {stepDone ? "✓" : "1"}
+        </div>
         <span style={{ fontWeight: 600, fontSize: 15 }}>Client & Report Info</span>
+        <span style={{ marginLeft: "auto", fontSize: 12, color: "var(--muted)" }}>All fields optional</span>
       </div>
       <div style={{ padding: 24 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -76,7 +79,7 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
           <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)" }}>Currency</span>
             <select value={info.currency} onChange={e => set("currency", e.target.value)} style={inputStyle}>
-              {CURRENCIES.map(c => <option key={c}>{c}</option>)}
+              {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </label>
           <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -90,9 +93,11 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
             </div>
           </label>
         </div>
+
+        {/* Logo upload */}
         <div style={{ marginTop: 16 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)", display: "block", marginBottom: 6 }}>
-            Agency Logo (optional)
+            Agency Logo <span style={{ fontWeight: 400 }}>(appears on PDF cover & PNG)</span>
           </span>
           <input ref={logoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleLogo} />
           <button onClick={() => logoRef.current?.click()} style={{
@@ -101,6 +106,7 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
             fontSize: 13, color: "var(--muted)", display: "flex", alignItems: "center", gap: 8
           }}>
             {info.logoDataUrl
+              // eslint-disable-next-line @next/next/no-img-element
               ? <><img src={info.logoDataUrl} alt="logo" style={{ height: 24, objectFit: "contain" }} /> Change Logo</>
               : "📎 Upload Logo"}
           </button>

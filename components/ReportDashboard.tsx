@@ -23,35 +23,26 @@ const sectionTitle = (text: string) => (
 );
 
 export default function ReportDashboard({ campaigns, clientInfo }: Props) {
-  const kpis = calcKPIs(campaigns);
+  const kpis    = calcKPIs(campaigns);
   const insights = generateInsights(campaigns, clientInfo.currency);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {/* Step badge */}
-      <div style={{
-        background: "var(--surface)", borderRadius: "var(--radius)",
-        boxShadow: "var(--shadow)", overflow: "hidden",
-      }}>
+      <div style={{ background:"var(--surface)", borderRadius:"var(--radius)", boxShadow:"var(--shadow)", overflow:"hidden" }}>
         <div style={{
-          padding: "16px 24px", borderBottom: "1px solid var(--border)",
-          display: "flex", alignItems: "center", gap: 12,
-          background: "var(--green-light)",
+          padding:"16px 24px", borderBottom:"1px solid var(--border)",
+          display:"flex", alignItems:"center", gap:12, background:"var(--green-light)",
         }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: "50%",
-            background: "var(--green)", color: "white",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 13, fontWeight: 700,
-          }}>✓</div>
-          <span style={{ fontWeight: 600, fontSize: 15, color: "var(--green)" }}>
+          <div style={{ width:28, height:28, borderRadius:"50%", background:"var(--green)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700 }}>✓</div>
+          <span style={{ fontWeight:600, fontSize:15, color:"var(--green)" }}>
             Report Ready — {campaigns.length} campaigns loaded
           </span>
         </div>
       </div>
 
       {/* Export buttons at top */}
-      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} />
+      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} insights={insights} />
 
       {/* KPI Cards */}
       {sectionTitle("Key Performance Indicators")}
@@ -70,7 +61,7 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
       <InsightsPanel insights={insights} />
 
       {/* Bottom export */}
-      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} />
+      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} insights={insights} />
     </div>
   );
 }
