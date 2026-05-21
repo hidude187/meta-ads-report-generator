@@ -34,7 +34,7 @@ export default function Charts({ campaigns, currency, brandColor }: Props) {
       data: campaigns.map(c => c.spend),
       backgroundColor: COLORS.slice(0, campaigns.length),
       borderWidth: 2,
-      borderColor: "#fff",
+      borderColor: "#0F0B18",
     }],
   };
 
@@ -57,7 +57,28 @@ export default function Charts({ campaigns, currency, brandColor }: Props) {
     </div>
   );
 
-  const opts = { responsive: true, plugins: { legend: { display: false } } };
+  const LABEL_COLOR = "#9E95AE";
+  const GRID_COLOR  = "rgba(255,255,255,0.06)";
+
+  const opts = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        labels: { color: LABEL_COLOR, font: { size: 11 } },
+      },
+    },
+    scales: {
+      x: {
+        ticks: { color: LABEL_COLOR, font: { size: 11 } },
+        grid:  { color: GRID_COLOR },
+      },
+      y: {
+        ticks: { color: LABEL_COLOR, font: { size: 11 } },
+        grid:  { color: GRID_COLOR },
+      },
+    },
+  };
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -66,16 +87,16 @@ export default function Charts({ campaigns, currency, brandColor }: Props) {
       </div>
       {chartCard("Budget Distribution",
         <div style={{ maxWidth: 280, margin: "0 auto" }}>
-          <Doughnut data={donutData} options={{ responsive: true, plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } } } }} />
+          <Doughnut data={donutData} options={{ responsive: true, plugins: { legend: { position: "bottom", labels: { color: LABEL_COLOR, font: { size: 11 } } } } }} />
         </div>
       )}
       {chartCard("CTR vs ROAS Matrix (bubble = spend)",
         <Bubble data={bubbleData} options={{
           responsive: true,
-          plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } } },
+          plugins: { legend: { position: "bottom", labels: { color: LABEL_COLOR, font: { size: 11 } } } },
           scales: {
-            x: { title: { display: true, text: "CTR (%)" } },
-            y: { title: { display: true, text: "ROAS (x)" } },
+            x: { title: { display: true, text: "CTR (%)", color: LABEL_COLOR }, ticks: { color: LABEL_COLOR }, grid: { color: GRID_COLOR } },
+            y: { title: { display: true, text: "ROAS (x)", color: LABEL_COLOR }, ticks: { color: LABEL_COLOR }, grid: { color: GRID_COLOR } },
           },
         }} />
       )}

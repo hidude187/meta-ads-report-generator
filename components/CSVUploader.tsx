@@ -47,7 +47,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone }: Prop
           background: stepDone ? "var(--green)" : "var(--blue)",
           color: "white", display: "flex", alignItems: "center",
           justifyContent: "center", fontSize: 13, fontWeight: 700
-        }}>2</div>
+        }}>{stepDone ? "✓" : "2"}</div>
         <span style={{ fontWeight: 600, fontSize: 15 }}>Upload Ads Data</span>
         <button
           onClick={() => setGuideOpen(o => !o)}

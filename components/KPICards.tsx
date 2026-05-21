@@ -31,7 +31,7 @@ function benchmarkLabel(key: string): string | null {
 }
 
 const CARDS = [
-  { key: "totalSpend",       label: "Total Spend",   type: "currency", color: "#2563EB", icon: "💰" },
+  { key: "totalSpend",       label: "Total Spend",   type: "currency", color: "#FF6B2B", icon: "💰" },
   { key: "avgROAS",          label: "Avg ROAS",      type: "decimal",  color: "#10B981", icon: "📈", suffix: "x" },
   { key: "totalConversions", label: "Conversions",   type: "number",   color: "#8B5CF6", icon: "✅" },
   { key: "avgCPA",           label: "Avg CPA",       type: "currency", color: "#F59E0B", icon: "🎯" },

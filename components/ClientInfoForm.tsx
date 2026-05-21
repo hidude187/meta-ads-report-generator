@@ -123,5 +123,7 @@ const inputStyle: React.CSSProperties = {
   fontSize: 14,
   outline: "none",
   width: "100%",
-  background: "var(--surface)",
+  background: "var(--surface2)",
+  color: "var(--text)",
+  colorScheme: "dark",
 };

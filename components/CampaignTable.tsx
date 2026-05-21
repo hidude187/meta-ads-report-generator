@@ -6,9 +6,9 @@ import { fmt, getCampaignBadge, metricHealth, metricTooltip, HealthSignal } from
 interface Props { campaigns: CampaignData[]; currency: string; }
 
 const BADGE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  TOP:    { bg: "#D1FAE5", color: "#065F46", label: "TOP" },
-  REVIEW: { bg: "#FEE2E2", color: "#991B1B", label: "REVIEW" },
-  WATCH:  { bg: "#FEF3C7", color: "#92400E", label: "WATCH" },
+  TOP:    { bg: "rgba(34,197,94,0.15)",   color: "#4ADE80", label: "TOP" },
+  REVIEW: { bg: "rgba(239,68,68,0.15)",   color: "#F87171", label: "REVIEW" },
+  WATCH:  { bg: "rgba(245,158,11,0.15)",  color: "#FCD34D", label: "WATCH" },
 };
 
 // Health dot component — shows colored dot with native tooltip

@@ -18,10 +18,10 @@ function insightAccent(text: string): string {
 
 function insightCategory(text: string): { label: string; bg: string; color: string } | null {
   if (text.startsWith('🛑') || (text.startsWith('⚠️') && text.includes("Don't make"))) {
-    return { label: "⚡ Don't React", bg: "#FEE2E2", color: "#991B1B" };
+    return { label: "⚡ Don't React", bg: "rgba(239,68,68,0.15)", color: "#F87171" };
   }
   if (text.startsWith('⏳')) {
-    return { label: "⏳ Too Early", bg: "#EDE9FE", color: "#5B21B6" };
+    return { label: "⏳ Too Early", bg: "rgba(139,92,246,0.15)", color: "#C4B5FD" };
   }
   return null;
 }

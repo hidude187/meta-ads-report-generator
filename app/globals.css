@@ -57,6 +57,17 @@ body {
   background: rgba(255, 107, 43, 0.05);
 }
 
+/* ── Global input / select theming ─────────────────────────── */
+input, select, textarea {
+  color: var(--text);
+  background: var(--surface2);
+  color-scheme: dark;
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
 /* mesh background */
 .mesh-bg {
   position: fixed;
