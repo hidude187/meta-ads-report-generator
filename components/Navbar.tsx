@@ -3,8 +3,9 @@
 export default function Navbar() {
   return (
     <nav style={{
-      background: "var(--surface)",
-      borderBottom: "1px solid var(--border)",
+      background: "rgba(8,6,14,0.92)",
+      backdropFilter: "blur(12px)",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
       padding: "0 32px",
       height: 60,
       display: "flex",
@@ -14,36 +15,51 @@ export default function Navbar() {
       top: 0,
       zIndex: 100,
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 700, fontSize: 18 }}>
+      {/* Logo */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{
-          width: 32, height: 32, background: "var(--blue)",
-          borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center"
+          width: 32, height: 32,
+          background: "linear-gradient(135deg, #FF6B2B, #E0408C)",
+          borderRadius: 8,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
         }}>
-          <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, fill: "white" }}>
-            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 20V10M12 20V4M6 20v-6" />
           </svg>
         </div>
-        MetriQuill
+        <span style={{ fontWeight: 700, fontSize: 17, color: "#FFF1E8", letterSpacing: "-0.3px", fontFamily: "'Syne', sans-serif" }}>
+          MetriQuill
+        </span>
         <span style={{
-          background: "var(--blue-light)", color: "var(--blue)",
-          fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 20
-        }}>Free</span>
+          fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20,
+          background: "rgba(255,107,43,0.12)",
+          border: "1px solid rgba(255,107,43,0.25)",
+          color: "#FF6B2B",
+          letterSpacing: "0.5px",
+          textTransform: "uppercase",
+        }}>
+          Free
+        </span>
       </div>
 
+      {/* CTA */}
       <a
-        href="https://metriquill.com?utm_source=metriquill-free&utm_medium=navbar&utm_campaign=upgrade"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="https://metriquill.com?utm_source=free-tool&utm_medium=navbar&utm_campaign=upgrade"
         style={{
-          background: "var(--blue)", color: "white",
-          padding: "8px 16px", borderRadius: 8,
-          fontSize: 13, fontWeight: 600, textDecoration: "none",
-          transition: "0.15s",
+          background: "linear-gradient(135deg, #FF6B2B, #E0408C)",
+          color: "white",
+          padding: "8px 18px",
+          borderRadius: 8,
+          fontSize: 13,
+          fontWeight: 600,
+          textDecoration: "none",
+          letterSpacing: "-0.1px",
+          whiteSpace: "nowrap",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "var(--blue-dark)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "var(--blue)")}
       >
-        Try MetriQuill Pro →
+        Get Full Access →
       </a>
     </nav>
   );
