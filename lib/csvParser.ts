@@ -23,7 +23,7 @@ function normalizeKey(k: string): string {
 function num(v: string | undefined): number {
   if (!v) return 0;
   const n = parseFloat(v.replace(/[^0-9.-]/g, ''));
-  return isNaN(n) ? 0 : n;
+  return isNaN(n) ? 0 : Math.max(0, n);
 }
 
 function safe(c: Partial<CampaignData>): CampaignData {
@@ -88,8 +88,11 @@ export function calcKPIs(campaigns: CampaignData[]) {
   const avgCPC  = totalClicks ? totalSpend / totalClicks : 0;
   const avgCPM  = totalImpressions ? (totalSpend / totalImpressions) * 1000 : 0;
   const avgCPA  = totalConversions ? totalSpend / totalConversions : 0;
-  const rc      = campaigns.filter(c => (c.roas ?? 0) > 0);
-  const avgROAS = rc.length ? rc.reduce((s, c) => s + (c.roas ?? 0), 0) / rc.length : 0;
+  const rc         = campaigns.filter(c => (c.roas ?? 0) > 0 && (c.spend ?? 0) > 0);
+  // Weighted ROAS = total revenue / total spend (spend-weighted, not arithmetic mean)
+  const totalRevenue = rc.reduce((s, c) => s + (c.spend ?? 0) * (c.roas ?? 0), 0);
+  const roasSpend    = rc.reduce((s, c) => s + (c.spend ?? 0), 0);
+  const avgROAS      = roasSpend > 0 ? totalRevenue / roasSpend : 0;
   const totalReach    = campaigns.reduce((s, c) => s + (c.reach ?? 0), 0);
   const avgFrequency  = totalReach ? totalImpressions / totalReach : 0;
   return { totalSpend, totalImpressions, totalClicks, avgCTR, avgCPC, avgCPM, avgCPA, totalConversions, avgROAS, avgFrequency, totalReach };

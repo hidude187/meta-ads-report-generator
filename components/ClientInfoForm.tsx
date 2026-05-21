@@ -21,6 +21,11 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
   const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Logo image must be under 2MB.");
+      e.target.value = "";
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => onLogoUpload(reader.result as string);
     reader.readAsDataURL(file);

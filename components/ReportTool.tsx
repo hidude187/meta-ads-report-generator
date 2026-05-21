@@ -26,12 +26,25 @@ export default function ReportTool() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   const handleFileUpload = useCallback((file: File) => {
+    // Security: enforce file type and size limits
+    if (!file.name.toLowerCase().endsWith(".csv") && file.type !== "text/csv") {
+      alert("Please upload a .csv file.");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      alert("File is too large. Please upload a CSV under 20MB.");
+      return;
+    }
     setFileName(file.name);
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const parsed = parseCSV(results.data as Record<string, string>[]);
+        const rows = results.data as Record<string, string>[];
+        if (rows.length > 2000) {
+          alert(`Your CSV has ${rows.length} rows. Only the first 2,000 campaigns will be loaded.`);
+        }
+        const parsed = parseCSV(rows.slice(0, 2000));
         setCampaigns(parsed);
         setStep(3);
       },

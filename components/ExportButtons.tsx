@@ -13,6 +13,11 @@ interface Props {
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
+// Sanitize a string for safe use as a filename
+function safeFilename(name: string): string {
+  return (name || "report").replace(/[^a-z0-9\-_. ]/gi, "_").trim() || "report";
+}
+
 function hexToRgb(hex: string): [number, number, number] {
   const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
   return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
@@ -75,8 +80,15 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
   // ── CSV ──────────────────────────────────────────────────────────────────
   const exportCSV = () => {
     const headers = ["Campaign","Spend","Impressions","Clicks","CTR","CPC","CPM","CPA","Conversions","ROAS"];
+    // Sanitize cell value: escape quotes + prevent CSV formula injection
+    const csvCell = (v: string | number) => {
+      const s = String(v);
+      // Prefix formula-injection characters with a tab to neutralize them in Excel
+      const safe = /^[=+\-@]/.test(s) ? `\t${s}` : s;
+      return `"${safe.replace(/"/g, '""')}"`;
+    };
     const rows = campaigns.map(c => [
-      `"${c.name.replace(/"/g,'""')}"`,
+      csvCell(c.name),
       c.spend, c.impressions, c.clicks,
       (c.ctr??0).toFixed(2), (c.cpc??0).toFixed(2), (c.cpm??0).toFixed(2),
       c.cpa > 0 ? (c.cpa).toFixed(2) : '',
@@ -86,7 +98,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
-    a.href = url; a.download = `metriquill-${clientInfo.clientName||"report"}.csv`;
+    a.href = url; a.download = `metriquill-${safeFilename(clientInfo.clientName)}.csv`;
     a.click(); URL.revokeObjectURL(url);
   };
 
@@ -152,7 +164,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
       canvas.toBlob(blob => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href=url; a.download=`metriquill-${clientInfo.clientName||"report"}.png`; a.click(); URL.revokeObjectURL(url);
+        const a = document.createElement("a"); a.href=url; a.download=`metriquill-${safeFilename(clientInfo.clientName)}.png`; a.click(); URL.revokeObjectURL(url);
       }, "image/png");
     } catch (e) { console.error(e); } finally { setPngLoading(false); }
   };
@@ -437,7 +449,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
 
       pageFooter(5);
 
-      doc.save(`metriquill-${clientInfo.clientName||"report"}.pdf`);
+      doc.save(`metriquill-${safeFilename(clientInfo.clientName)}.pdf`);
     } catch (e) { console.error("PDF error:",e); }
     finally { setPdfLoading(false); }
   };
