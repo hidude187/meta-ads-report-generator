@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -17,18 +18,13 @@ export default function Navbar() {
     }}>
       {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{
-          width: 32, height: 32,
-          background: "linear-gradient(135deg, #FF6B2B, #E0408C)",
-          borderRadius: 8,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0,
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 20V10M12 20V4M6 20v-6" />
-          </svg>
-        </div>
+        <Image
+          src="/metriquill logo.png"
+          alt="MetriQuill"
+          width={32}
+          height={32}
+          style={{ borderRadius: 8, objectFit: "contain" }}
+        />
         <span style={{ fontWeight: 700, fontSize: 17, color: "#FFF1E8", letterSpacing: "-0.3px", fontFamily: "'Syne', sans-serif" }}>
           MetriQuill
         </span>

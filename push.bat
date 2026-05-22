@@ -1,5 +1,5 @@
 @echo off
 cd /d C:\Users\Wahid\Desktop\claude\projects\metriquill-free
 git add -A
-git commit -m "fix: security + logic audit - weighted ROAS, file size limits, CSV injection, filename sanitization, name truncation, negative number clamping"
+git commit -m "feat: add real logo + favicons - replaced gradient placeholder with actual logo, wired all icons in layout.tsx"
 git push
