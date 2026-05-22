@@ -1,4 +1,5 @@
 import { CampaignData } from './types';
+export { calcKPIs } from './kpi';
 
 const KEY_MAP: Record<string, keyof CampaignData> = {
   'campaign name': 'name', 'campaign': 'name', 'ad set name': 'name',
@@ -77,23 +78,4 @@ export function generateDemoData(): CampaignData[] {
     { name: 'Conversion — DPA Catalog',       spend: 61800, impressions: 445000, clicks: 6230, ctr: 1.40, cpc: 9.92,  cpm: 138.88, conversions: 203, roas: 5.2, cpa: 304.43, reach: 187000, frequency: 2.4 },
     { name: 'Lead Gen — Form Fills',          spend: 34500, impressions: 267000, clicks: 3740, ctr: 1.40, cpc: 9.22,  cpm: 129.21, conversions: 147, roas: 0,   cpa: 234.69, reach: 142000, frequency: 1.9 },
   ];
-}
-
-export function calcKPIs(campaigns: CampaignData[]) {
-  const totalSpend       = campaigns.reduce((s, c) => s + (c.spend ?? 0), 0);
-  const totalImpressions = campaigns.reduce((s, c) => s + (c.impressions ?? 0), 0);
-  const totalClicks      = campaigns.reduce((s, c) => s + (c.clicks ?? 0), 0);
-  const totalConversions = campaigns.reduce((s, c) => s + (c.conversions ?? 0), 0);
-  const avgCTR  = totalImpressions ? (totalClicks / totalImpressions) * 100 : 0;
-  const avgCPC  = totalClicks ? totalSpend / totalClicks : 0;
-  const avgCPM  = totalImpressions ? (totalSpend / totalImpressions) * 1000 : 0;
-  const avgCPA  = totalConversions ? totalSpend / totalConversions : 0;
-  const rc         = campaigns.filter(c => (c.roas ?? 0) > 0 && (c.spend ?? 0) > 0);
-  // Weighted ROAS = total revenue / total spend (spend-weighted, not arithmetic mean)
-  const totalRevenue = rc.reduce((s, c) => s + (c.spend ?? 0) * (c.roas ?? 0), 0);
-  const roasSpend    = rc.reduce((s, c) => s + (c.spend ?? 0), 0);
-  const avgROAS      = roasSpend > 0 ? totalRevenue / roasSpend : 0;
-  const totalReach    = campaigns.reduce((s, c) => s + (c.reach ?? 0), 0);
-  const avgFrequency  = totalReach ? totalImpressions / totalReach : 0;
-  return { totalSpend, totalImpressions, totalClicks, avgCTR, avgCPC, avgCPM, avgCPA, totalConversions, avgROAS, avgFrequency, totalReach };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { CampaignData, ClientInfo } from "@/lib/types";
+import { CampaignData, ClientInfo, KPISummary } from "@/lib/types";
 import { calcKPIs } from "@/lib/csvParser";
 import { generateInsights } from "@/lib/formatters";
 import KPICards from "./KPICards";
@@ -23,7 +23,7 @@ const sectionTitle = (text: string) => (
 );
 
 export default function ReportDashboard({ campaigns, clientInfo }: Props) {
-  const kpis    = calcKPIs(campaigns);
+  const kpis: KPISummary = calcKPIs(campaigns);
   const insights = generateInsights(campaigns, clientInfo.currency);
 
   return (
@@ -42,7 +42,7 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
       </div>
 
       {/* Export buttons at top */}
-      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} insights={insights} />
+      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis} insights={insights} />
 
       {/* KPI Cards */}
       {sectionTitle("Key Performance Indicators")}
@@ -59,9 +59,6 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
       {/* Insights */}
       {sectionTitle("Insights & Recommendations")}
       <InsightsPanel insights={insights} />
-
-      {/* Bottom export */}
-      <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis as Record<string, number>} insights={insights} />
     </div>
   );
 }

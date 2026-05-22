@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project tooling (never commit)
+AGENTS.md
+CLAUDE.md
+MEMORY.md
+REMEDIATION.md
+*.bat
+commit_msg.txt

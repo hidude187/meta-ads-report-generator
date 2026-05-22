@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CampaignData, ClientInfo } from "@/lib/types";
+import { CampaignData, ClientInfo, KPISummary } from "@/lib/types";
 import { fmt, BENCHMARKS, getCampaignBadge, generateRecommendations } from "@/lib/formatters";
+import { hexToRgb, darkenHex } from "@/lib/colors";
 
 interface Props {
   campaigns: CampaignData[];
   clientInfo: ClientInfo;
-  kpis: Record<string, number>;
+  kpis: KPISummary;
   insights?: string[];
 }
 
@@ -16,17 +17,6 @@ interface Props {
 // Sanitize a string for safe use as a filename
 function safeFilename(name: string): string {
   return (name || "report").replace(/[^a-z0-9\-_. ]/gi, "_").trim() || "report";
-}
-
-function hexToRgb(hex: string): [number, number, number] {
-  const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
-  return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
-}
-
-function darken(hex: string, amount = 40): string {
-  const [r,g,b] = hexToRgb(hex);
-  const d = (v: number) => Math.max(0, v - amount).toString(16).padStart(2,"0");
-  return `#${d(r)}${d(g)}${d(b)}`;
 }
 
 function hasArabic(str: string): boolean {
@@ -39,7 +29,13 @@ function reverseArabic(str: string): string {
 
 async function fetchAmiriBase64(): Promise<string | null> {
   try {
-    const res = await fetch("https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2");
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), 5000)
+    );
+    const res = await Promise.race([
+      fetch("https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2"),
+      timeout,
+    ]);
     const buf = await res.arrayBuffer();
     const bytes = new Uint8Array(buf);
     let binary = "";
@@ -111,7 +107,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
       canvas.width = W; canvas.height = H;
       const ctx = canvas.getContext("2d")!;
       const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor) ? clientInfo.brandColor : "#2563EB";
-      const dark  = darken(brand, 50);
+      const dark  = darkenHex(brand, 50);
       try {
         const [iF, aF] = await Promise.allSettled([
           new FontFace("Inter","url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2)").load(),
@@ -178,7 +174,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
       const W=210, H=297;
       const brand = /^#[0-9A-Fa-f]{6}$/.test(clientInfo.brandColor) ? clientInfo.brandColor : "#2563EB";
       const [br,bg,bb] = hexToRgb(brand);
-      const [dr,dg,db] = hexToRgb(darken(brand,40));
+      const [dr,dg,db] = hexToRgb(darkenHex(brand,40));
       const cur = clientInfo.currency || "USD";
 
       let hasAmiri = false;

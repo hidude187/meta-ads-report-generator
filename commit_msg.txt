@@ -1,1 +1,0 @@
-fix: remove invalid eslint key from next.config.ts

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Papa from "papaparse";
 import Navbar from "./Navbar";
 import ProBanner from "./ProBanner";
@@ -23,7 +23,8 @@ export default function ReportTool() {
 
   const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
   const [fileName, setFileName] = useState("");
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [infoFilled, setInfoFilled] = useState(false);
+  const [csvLoaded, setCsvLoaded] = useState(false);
 
   const handleFileUpload = useCallback((file: File) => {
     // Security: enforce file type and size limits
@@ -40,13 +41,22 @@ export default function ReportTool() {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const rows = results.data as Record<string, string>[];
-        if (rows.length > 2000) {
-          alert(`Your CSV has ${rows.length} rows. Only the first 2,000 campaigns will be loaded.`);
+        try {
+          const rows = results.data as Record<string, string>[];
+          if (rows.length > 2000) {
+            alert(`Your CSV has ${rows.length} rows. Only the first 2,000 campaigns will be loaded.`);
+          }
+          const parsed = parseCSV(rows.slice(0, 2000));
+          if (!parsed.length) {
+            alert("No valid campaign rows found. Make sure your CSV has spend or impressions data.");
+            return;
+          }
+          setCampaigns(parsed);
+          setCsvLoaded(true);
+        } catch (err) {
+          console.error("CSV parse error:", err);
+          alert("Failed to parse CSV. Please check the file format and try again.");
         }
-        const parsed = parseCSV(rows.slice(0, 2000));
-        setCampaigns(parsed);
-        setStep(3);
       },
     });
   }, []);
@@ -54,7 +64,7 @@ export default function ReportTool() {
   const handleDemo = useCallback(() => {
     setCampaigns(generateDemoData());
     setFileName("demo-data.csv");
-    setStep(3);
+    setCsvLoaded(true);
   }, []);
 
   const handleLogoUpload = useCallback((dataUrl: string) => {
@@ -77,15 +87,15 @@ export default function ReportTool() {
         <div style={{ display: "grid", gap: 20 }}>
           <ClientInfoForm
             info={clientInfo}
-            onChange={setClientInfo}
+            onChange={(info) => { setClientInfo(info); setInfoFilled(!!(info.clientName && info.dateFrom && info.dateTo)); }}
             onLogoUpload={handleLogoUpload}
-            stepDone={step >= 2}
+            stepDone={infoFilled}
           />
           <CSVUploader
             onFile={handleFileUpload}
             onDemo={handleDemo}
             fileName={fileName}
-            stepDone={step >= 3}
+            stepDone={csvLoaded}
             currency={clientInfo.currency}
           />
           {campaigns.length > 0 && (

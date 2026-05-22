@@ -4,28 +4,8 @@
 
 import { CampaignData, ClientInfo } from "./types";
 import { fmt } from "./formatters";
-import { calcKPIs } from "./csvParser";
-
-function hexNoHash(hex: string): string {
-  const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
-  return h.replace("#", "");
-}
-
-function darkenHex(hex: string, amount = 40): string {
-  const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
-  const r = Math.max(0, parseInt(h.slice(1,3),16) - amount);
-  const g = Math.max(0, parseInt(h.slice(3,5),16) - amount);
-  const b = Math.max(0, parseInt(h.slice(5,7),16) - amount);
-  return [r,g,b].map(v => v.toString(16).padStart(2,"0")).join("");
-}
-
-function lightenHex(hex: string, amount = 180): string {
-  const h = /^#[0-9A-Fa-f]{6}$/.test(hex) ? hex : "#2563EB";
-  const r = Math.min(255, parseInt(h.slice(1,3),16) + amount);
-  const g = Math.min(255, parseInt(h.slice(3,5),16) + amount);
-  const b = Math.min(255, parseInt(h.slice(5,7),16) + amount);
-  return [r,g,b].map(v => v.toString(16).padStart(2,"0")).join("");
-}
+import { calcKPIs } from "./kpi";
+import { hexNoHash, darkenHex, lightenHex } from "./colors";
 
 export async function exportPPTX(
   campaigns: CampaignData[],
@@ -42,7 +22,7 @@ export async function exportPPTX(
 
   const kpis = calcKPIs(campaigns);
   const brand = hexNoHash(clientInfo.brandColor);
-  const brandDark = darkenHex(clientInfo.brandColor, 50);
+  const brandDark = hexNoHash(darkenHex(clientInfo.brandColor, 50));
   const W = 10; // slide width inches
   const H = 5.625;
 

@@ -80,7 +80,7 @@ export default function CampaignTable({ campaigns, currency }: Props) {
               const cpaSig  = c.cpa > 0 ? metricHealth('cpa', c.cpa) : 'neutral' as HealthSignal;
 
               return (
-                <tr key={i} style={{ borderBottom: "1px solid var(--border)" }}
+                <tr key={`${i}-${c.name}`} style={{ borderBottom: "1px solid var(--border)" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "var(--bg)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "")}>
 
