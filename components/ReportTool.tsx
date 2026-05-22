@@ -86,6 +86,7 @@ export default function ReportTool() {
             onDemo={handleDemo}
             fileName={fileName}
             stepDone={step >= 3}
+            currency={clientInfo.currency}
           />
           {campaigns.length > 0 && (
             <ReportDashboard

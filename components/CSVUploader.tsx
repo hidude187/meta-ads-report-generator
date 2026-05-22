@@ -7,6 +7,7 @@ interface Props {
   onDemo: () => void;
   fileName: string;
   stepDone: boolean;
+  currency: string;
 }
 
 const REQUIRED_COLUMNS = [
@@ -21,7 +22,7 @@ const REQUIRED_COLUMNS = [
   "Purchase ROAS (return on ad spend)",
 ];
 
-export default function CSVUploader({ onFile, onDemo, fileName, stepDone }: Props) {
+export default function CSVUploader({ onFile, onDemo, fileName, stepDone, currency }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
@@ -158,7 +159,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone }: Prop
           borderRadius: 8, background: "var(--bg)", cursor: "pointer",
           fontSize: 14, fontWeight: 500, color: "var(--text)",
         }}>
-          🎯 Load Demo Data (5 campaigns, DZD)
+          🎯 Load Demo Data (5 campaigns, {currency})
         </button>
       </div>
     </div>
