@@ -10,7 +10,7 @@ interface Props {
   stepDone: boolean;
 }
 
-const CURRENCIES = ["DZD", "USD", "EUR", "SAR", "AED", "GBP", "MAD", "TND", "EGP", "TRY"];
+const CURRENCIES = ["USD", "EUR", "GBP", "AED", "SAR", "MAD", "DZD", "TND", "EGP", "TRY"];
 
 export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone }: Props) {
   const logoRef = useRef<HTMLInputElement>(null);

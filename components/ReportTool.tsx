@@ -54,14 +54,6 @@ export default function ReportTool() {
   const handleDemo = useCallback(() => {
     setCampaigns(generateDemoData());
     setFileName("demo-data.csv");
-    // Always reset to USD demo context so numbers make sense
-    setClientInfo(prev => ({
-      ...prev,
-      currency: "USD",
-      clientName: prev.clientName || "Demo Client",
-      dateFrom: prev.dateFrom || "2025-01-01",
-      dateTo: prev.dateTo || "2025-01-31",
-    }));
     setStep(3);
   }, []);
 
