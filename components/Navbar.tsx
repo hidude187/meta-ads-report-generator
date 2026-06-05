@@ -25,7 +25,7 @@ export default function Navbar() {
           height={32}
           style={{ borderRadius: 8, objectFit: "contain" }}
         />
-        <span style={{ fontWeight: 700, fontSize: 17, color: "#FFF1E8", letterSpacing: "-0.3px", fontFamily: "'Syne', sans-serif" }}>
+        <span style={{ fontWeight: 700, fontSize: 17, color: "#FFF1E8", letterSpacing: "-0.3px", fontFamily: "var(--font-display)" }}>
           MetriQuill
         </span>
         <span style={{
@@ -43,16 +43,15 @@ export default function Navbar() {
       {/* CTA */}
       <a
         href="https://metriquill.com?utm_source=free-tool&utm_medium=navbar&utm_campaign=upgrade"
+        className="btn-primary"
         style={{
-          background: "linear-gradient(135deg, #FF6B2B, #E0408C)",
-          color: "white",
           padding: "8px 18px",
           borderRadius: 8,
           fontSize: 13,
-          fontWeight: 600,
           textDecoration: "none",
           letterSpacing: "-0.1px",
           whiteSpace: "nowrap",
+          display: "inline-block",
         }}
       >
         Get Full Access →

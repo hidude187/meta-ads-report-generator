@@ -11,22 +11,21 @@ export default function ProBanner() {
       justifyContent: "center",
       gap: 14,
       fontSize: 13,
-      color: "#C4BBCF",
+      color: "var(--text2)",
       flexWrap: "wrap",
     }}>
       <span>⚡ Want Google Ads, TikTok & Snapchat support + AI insights + scheduled reports?</span>
       <a
         href="https://metriquill.com/signup?utm_source=free-tool&utm_medium=probanner&utm_campaign=upgrade"
+        className="btn-primary"
         style={{
-          background: "linear-gradient(135deg, #FF6B2B, #E0408C)",
-          color: "white",
           padding: "5px 14px",
           borderRadius: 6,
-          fontWeight: 700,
           fontSize: 12,
           textDecoration: "none",
           whiteSpace: "nowrap",
           letterSpacing: "-0.1px",
+          display: "inline-block",
         }}
       >
         Try MetriQuill free →
