@@ -34,7 +34,7 @@ export default function Charts({ campaigns, currency, brandColor }: Props) {
       data: campaigns.map(c => c.spend),
       backgroundColor: COLORS.slice(0, campaigns.length),
       borderWidth: 2,
-      borderColor: "#0F0B18",
+      borderColor: "#FFFFFF",
     }],
   };
 
@@ -57,8 +57,8 @@ export default function Charts({ campaigns, currency, brandColor }: Props) {
     </div>
   );
 
-  const LABEL_COLOR = "#9E95AE";
-  const GRID_COLOR  = "rgba(255,255,255,0.06)";
+  const LABEL_COLOR = "#8B93A8";
+  const GRID_COLOR  = "rgba(0,0,0,0.06)";
 
   const opts = {
     responsive: true,

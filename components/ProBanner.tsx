@@ -3,8 +3,8 @@
 export default function ProBanner() {
   return (
     <div style={{
-      background: "linear-gradient(135deg, rgba(255,107,43,0.12) 0%, rgba(224,64,140,0.10) 100%)",
-      borderBottom: "1px solid rgba(255,107,43,0.18)",
+      background: "rgba(255,107,43,0.06)",
+      borderBottom: "1px solid rgba(255,107,43,0.14)",
       padding: "10px 32px",
       display: "flex",
       alignItems: "center",

@@ -7,11 +7,11 @@ const ReportTool = dynamic(() => import("@/components/ReportTool"), {
   loading: () => (
     <div style={{
       minHeight: "100vh",
-      background: "#080C14",
+      background: "#F4F6F9",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      color: "#94a3b8",
+      color: "#9BA3AF",
       fontFamily: "DM Sans, sans-serif",
       fontSize: 16,
     }}>

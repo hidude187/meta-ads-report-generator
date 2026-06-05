@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav style={{
       background: "rgba(8,6,14,0.92)",
       backdropFilter: "blur(12px)",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      borderBottom: "1px solid rgba(255,255,255,0.08)",
       padding: "0 32px",
       height: 60,
       display: "flex",
