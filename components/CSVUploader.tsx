@@ -69,7 +69,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           background: "var(--bg)",
         }}>
           <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 12, color: "var(--text)" }}>
-            📋 How to export the right CSV from Meta Ads Manager
+            How to export the right CSV from Meta Ads Manager
           </p>
 
           {/* Steps */}
@@ -111,7 +111,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
             borderLeft: "3px solid var(--amber)",
           }}>
             <p style={{ fontSize: 12, color: "var(--amber)", fontWeight: 700, marginBottom: 4 }}>
-              ⚠️ Common mistake — getting all zeros?
+              Common mistake — getting all zeros?
             </p>
             <p style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.6, margin: 0 }}>
               If Spend, Clicks, and CTR all show as 0, your export is missing the cost columns.
@@ -133,7 +133,14 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
         >
-          <div style={{ fontSize: 32, marginBottom: 12 }}>📂</div>
+          <div style={{ fontSize: 32, marginBottom: 12, color: "var(--text3)" }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <polyline points="9,15 12,12 15,15"/>
+            </svg>
+          </div>
           {fileName ? (
             <p style={{ fontWeight: 600, color: "var(--green)" }}>✓ {fileName}</p>
           ) : (
@@ -159,7 +166,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           borderRadius: 8, background: "var(--bg)", cursor: "pointer",
           fontSize: 14, fontWeight: 500, color: "var(--text)",
         }}>
-          🎯 Load Demo Data (5 campaigns, {currency})
+          Load Demo Data (5 campaigns, {currency})
         </button>
       </div>
     </div>

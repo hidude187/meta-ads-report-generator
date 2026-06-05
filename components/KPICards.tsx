@@ -77,13 +77,12 @@ export default function KPICards({ kpis, currency }: Props) {
             borderTop: `3px solid ${color}`,
             position: "relative",
           }}>
-            <div style={{ fontSize: 20, marginBottom: 6 }}>{card.icon}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color, lineHeight: 1.2 }}>
               {formatted}
             </div>
             <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 4, fontWeight: 500 }}>
               {card.label}
-              {isWarn && <span title="High frequency — possible ad fatigue" style={{ marginLeft: 4 }}>⚠️</span>}
+              {isWarn && <span title="High frequency — possible ad fatigue" style={{ marginLeft: 4, color: "#EF4444", fontWeight: 700 }}>!</span>}
             </div>
             {/* Benchmark line */}
             {bLabel && (

@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { MetriQuillLogo } from "./MetriQuillLogo";
 
 export default function Navbar() {
   return (
@@ -18,16 +18,7 @@ export default function Navbar() {
     }}>
       {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <Image
-          src="/metriquill logo.png"
-          alt="MetriQuill"
-          width={32}
-          height={32}
-          style={{ borderRadius: 8, objectFit: "contain" }}
-        />
-        <span style={{ fontWeight: 700, fontSize: 17, color: "#FFF1E8", letterSpacing: "-0.3px", fontFamily: "var(--font-display)" }}>
-          MetriQuill
-        </span>
+        <MetriQuillLogo size={28} />
         <span style={{
           fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20,
           background: "rgba(255,107,43,0.12)",
@@ -35,6 +26,7 @@ export default function Navbar() {
           color: "#FF6B2B",
           letterSpacing: "0.5px",
           textTransform: "uppercase",
+          fontFamily: "var(--font-display)",
         }}>
           Free
         </span>

@@ -14,7 +14,12 @@ export default function ProBanner() {
       color: "var(--text2)",
       flexWrap: "wrap",
     }}>
-      <span>⚡ Want Google Ads, TikTok & Snapchat support + AI insights + scheduled reports?</span>
+      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#FF6B2B" aria-hidden="true">
+          <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/>
+        </svg>
+        Want Google Ads, TikTok &amp; Snapchat support + AI insights + scheduled reports?
+      </span>
       <a
         href="https://metriquill.com/signup?utm_source=free-tool&utm_medium=probanner&utm_campaign=upgrade"
         className="btn-primary"

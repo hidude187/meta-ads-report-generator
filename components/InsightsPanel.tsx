@@ -42,7 +42,9 @@ export default function InsightsPanel({ insights }: Props) {
         padding: "16px 24px", borderBottom: "1px solid var(--border)",
         display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
       }}>
-        <span style={{ fontSize: 18 }}>💡</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 3-1.5 5-3.5 6.5V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.5C6.5 14 5 12 5 9a7 7 0 0 1 7-7z"/>
+        </svg>
         <span style={{ fontWeight: 600, fontSize: 15 }}>Campaign Insights</span>
         <span style={{
           background: "var(--amber-light)", color: "var(--amber)",
@@ -90,7 +92,7 @@ export default function InsightsPanel({ insights }: Props) {
         padding: "10px 24px", borderTop: "1px solid var(--border)",
         fontSize: 11, color: "var(--muted)",
       }}>
-        💎 Upgrade to MetriQuill Pro for AI-powered analysis with layered Pre-Click → Post-Click → Economics diagnosis →
+        Upgrade to MetriQuill Pro for AI-powered analysis with layered Pre-Click → Post-Click → Economics diagnosis →
       </div>
     </div>
   );
