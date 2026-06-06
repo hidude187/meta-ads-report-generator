@@ -129,5 +129,5 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "var(--surface2)",
   color: "var(--text)",
-  colorScheme: "dark",
+  colorScheme: "light",
 };

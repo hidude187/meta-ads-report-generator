@@ -67,7 +67,7 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
 
   const lowCTR = campaigns.filter(c => {
     const type = detectCampaignType(c.name);
-    return type !== 'awareness' && c.ctr < BENCHMARKS.ctr.poor && c.spend > 200;
+    return type !== 'awareness' && c.ctr > 0 && c.ctr < BENCHMARKS.ctr.poor && c.spend > 200;
   });
   if (lowCTR.length && insights.length < 5) {
     insights.push(`📊 ${lowCTR.map(c => `"${cap(c.name)}"`).join(', ')} ${lowCTR.length > 1 ? 'have' : 'has'} CTR below 0.72% (industry average: 0.90%). Audience-ad mismatch — test new creative angles or tighten targeting.`);

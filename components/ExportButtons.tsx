@@ -185,8 +185,9 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
       const LF = (s:"bold"|"normal"="normal") => doc.setFont("helvetica",s);
       const AF = () => hasAmiri ? doc.setFont("Amiri","normal") : LF();
 
-      const safeName = (name: string, maxLen=38) => {
+      const safeName = (name: string, idx=0, maxLen=38) => {
         if (hasArabic(name) && hasAmiri) { const r=reverseArabic(name); return r.length>maxLen?r.slice(0,maxLen)+"...":r; }
+        if (hasArabic(name) && !hasAmiri) return `Campaign ${idx + 1}`;
         const clean = name.replace(/[^\x00-\x7F\u00C0-\u024F]/g,"").trim() || name.replace(/\s+/g," ").slice(0,maxLen);
         return clean.length>maxLen?clean.slice(0,maxLen)+"...":clean;
       };
@@ -286,11 +287,11 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
       summaryY += 12;
 
       const benchRows = [
-        { label:"Avg CTR",      value:fmt(kpis.avgCTR,"percent"),              benchmark:"0.90%",  good: (kpis.avgCTR||0)>=BENCHMARKS.ctr.good,   bad:(kpis.avgCTR||0)<BENCHMARKS.ctr.poor },
-        { label:"Avg CPC",      value:fmt(kpis.avgCPC,"currency",cur),         benchmark:"$1.72",  good:(kpis.avgCPC||0)<=BENCHMARKS.cpc.good,    bad:(kpis.avgCPC||0)>BENCHMARKS.cpc.poor },
-        { label:"Avg CPM",      value:fmt(kpis.avgCPM,"currency",cur),         benchmark:"$14.00", good:(kpis.avgCPM||0)<=BENCHMARKS.cpm.good,    bad:(kpis.avgCPM||0)>BENCHMARKS.cpm.poor },
-        { label:"Avg ROAS",     value:fmt(kpis.avgROAS,"decimal")+"x",         benchmark:"2.19x",  good:(kpis.avgROAS||0)>=BENCHMARKS.roas.good,  bad:(kpis.avgROAS||0)<BENCHMARKS.roas.poor },
-        { label:"Avg Frequency",value:fmt(kpis.avgFrequency,"decimal")+"x",   benchmark:"<2.5x",  good:(kpis.avgFrequency||0)<2.0,              bad:(kpis.avgFrequency||0)>=BENCHMARKS.frequency.warn },
+        { label:"Avg CTR",      value:fmt(kpis.avgCTR,"percent"),              benchmark:"0.90%",  good:(kpis.avgCTR||0)>0&&(kpis.avgCTR||0)>=BENCHMARKS.ctr.good,   bad:(kpis.avgCTR||0)>0&&(kpis.avgCTR||0)<BENCHMARKS.ctr.poor },
+        { label:"Avg CPC",      value:fmt(kpis.avgCPC,"currency",cur),         benchmark:"$1.72",  good:(kpis.avgCPC||0)>0&&(kpis.avgCPC||0)<=BENCHMARKS.cpc.good,   bad:(kpis.avgCPC||0)>0&&(kpis.avgCPC||0)>BENCHMARKS.cpc.poor },
+        { label:"Avg CPM",      value:fmt(kpis.avgCPM,"currency",cur),         benchmark:"$14.00", good:(kpis.avgCPM||0)>0&&(kpis.avgCPM||0)<=BENCHMARKS.cpm.good,   bad:(kpis.avgCPM||0)>0&&(kpis.avgCPM||0)>BENCHMARKS.cpm.poor },
+        { label:"Avg ROAS",     value:fmt(kpis.avgROAS,"decimal")+"x",         benchmark:"2.19x",  good:(kpis.avgROAS||0)>0&&(kpis.avgROAS||0)>=BENCHMARKS.roas.good, bad:(kpis.avgROAS||0)>0&&(kpis.avgROAS||0)<BENCHMARKS.roas.poor },
+        { label:"Avg Frequency",value:fmt(kpis.avgFrequency,"decimal")+"x",   benchmark:"<2.5x",  good:(kpis.avgFrequency||0)<2.0,                                   bad:(kpis.avgFrequency||0)>=BENCHMARKS.frequency.warn },
       ];
 
       // Header
@@ -342,7 +343,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
         doc.setFillColor(...roasRgb); doc.circle(22,rowY-1.5,1.5,"F");
         // name
         const isArRow = hasArabic(c.name);
-        const rowName = safeName(c.name,28);
+        const rowName = safeName(c.name, i, 28);
         doc.setFontSize(7); isArRow&&hasAmiri ? (AF(),doc.setTextColor(15,23,42),doc.text(rowName,tX[0]+5,rowY),LF("normal")) : (LF("normal"),doc.setTextColor(15,23,42),doc.text(rowName,tX[0]+5,rowY));
         // badge
         if (badge) {

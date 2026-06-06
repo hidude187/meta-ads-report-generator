@@ -14,7 +14,7 @@ const KEY_MAP: Record<string, keyof CampaignData> = {
   'purchase roas (return on ad spend)': 'roas', 'website purchase roas': 'roas', 'roas': 'roas',
   'reach': 'reach',
   'frequency': 'frequency',
-  'cost per result': 'cpa', 'cost per conversion': 'cpa', 'cost per purchase': 'cpa', 'cpa': 'cpa',
+  'cost per result': 'cpa', 'cost per results': 'cpa', 'cost per conversion': 'cpa', 'cost per purchase': 'cpa', 'cpa': 'cpa',
 };
 
 function normalizeKey(k: string): string {
@@ -42,6 +42,14 @@ function safe(c: Partial<CampaignData>): CampaignData {
     reach: c.reach ?? 0,
     frequency: c.frequency ?? 0,
   };
+}
+
+export function extractCSVDates(rows: Record<string, string>[]): { dateFrom: string; dateTo: string } {
+  if (!rows.length) return { dateFrom: '', dateTo: '' };
+  const first = rows[0];
+  const dateFrom = first['Reporting starts'] || first['reporting starts'] || '';
+  const dateTo   = first['Reporting ends']   || first['reporting ends']   || '';
+  return { dateFrom, dateTo };
 }
 
 export function parseCSV(rows: Record<string, string>[]): CampaignData[] {

@@ -13,6 +13,7 @@ interface Props { currency: string; kpis: KPIs; }
 
 // Benchmark signals: returns 'good' | 'poor' | 'neutral'
 function signal(key: string, val: number): 'good' | 'poor' | 'neutral' {
+  if (val <= 0) return 'neutral';
   if (key === 'avgCTR')  return val >= BENCHMARKS.ctr.good  ? 'good' : val < BENCHMARKS.ctr.poor   ? 'poor' : 'neutral';
   if (key === 'avgROAS') return val >= BENCHMARKS.roas.good ? 'good' : val < BENCHMARKS.roas.poor  ? 'poor' : 'neutral';
   if (key === 'avgCPC')  return val <= BENCHMARKS.cpc.good  ? 'good' : val > BENCHMARKS.cpc.poor   ? 'poor' : 'neutral';

@@ -7,7 +7,7 @@ import ProBanner from "./ProBanner";
 import ClientInfoForm from "./ClientInfoForm";
 import CSVUploader from "./CSVUploader";
 import ReportDashboard from "./ReportDashboard";
-import { parseCSV, generateDemoData } from "@/lib/csvParser";
+import { parseCSV, extractCSVDates, generateDemoData } from "@/lib/csvParser";
 import { CampaignData, ClientInfo } from "@/lib/types";
 
 export default function ReportTool() {
@@ -51,6 +51,13 @@ export default function ReportTool() {
             alert("No valid campaign rows found. Make sure your CSV has spend or impressions data.");
             return;
           }
+          // Auto-fill dates from CSV if fields are currently empty
+          const { dateFrom, dateTo } = extractCSVDates(rows);
+          setClientInfo(prev => ({
+            ...prev,
+            dateFrom: prev.dateFrom || dateFrom,
+            dateTo:   prev.dateTo   || dateTo,
+          }));
           setCampaigns(parsed);
           setCsvLoaded(true);
         } catch (err) {
