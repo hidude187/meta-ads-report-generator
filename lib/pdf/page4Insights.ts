@@ -1,5 +1,6 @@
 // lib/pdf/page4Insights.ts
 import { PdfCtx } from "@/lib/pdf/types";
+import { addWatermark } from "@/lib/pdf/pdfHelpers";
 
 export function drawInsightsPage(ctx: PdfCtx, insights: string[]): void {
   const { doc, W, H, br, bg, bb, LF, pageFooter } = ctx;
@@ -39,5 +40,6 @@ export function drawInsightsPage(ctx: PdfCtx, insights: string[]): void {
     doc.setFontSize(9); LF("normal"); doc.setTextColor(100, 116, 139);
     doc.text("No insights generated.", 20, 60);
   }
+  addWatermark(ctx);
   pageFooter(4);
 }

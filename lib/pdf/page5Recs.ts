@@ -2,6 +2,7 @@
 import { PdfCtx } from "@/lib/pdf/types";
 import { CampaignData, ClientInfo } from "@/lib/types";
 import { generateRecommendations } from "@/lib/formatters";
+import { addWatermark } from "@/lib/pdf/pdfHelpers";
 
 export function drawRecsPage(
   ctx: PdfCtx,
@@ -50,5 +51,6 @@ export function drawRecsPage(
 
   // Suppress unused var warning — clientInfo reserved for future personalisation
   void clientInfo;
+  addWatermark(ctx);
   pageFooter(5);
 }

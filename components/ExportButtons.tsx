@@ -15,6 +15,12 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
   const [pdfLoading,  setPdfLoading]  = useState(false);
   const [pngLoading,  setPngLoading]  = useState(false);
   const [pptxLoading, setPptxLoading] = useState(false);
+  const [showToast,   setShowToast]   = useState(false);
+
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 6000);
+  };
 
   // ── PDF ──────────────────────────────────────────────────────────────────
   const exportPDF = async () => {
@@ -22,6 +28,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
     try {
       const { buildPdf } = await import("@/lib/buildPdf");
       await buildPdf(campaigns, clientInfo, kpis, insights);
+      triggerToast();
     } catch (e) { console.error("PDF error:", e); }
     finally { setPdfLoading(false); }
   };
@@ -42,6 +49,7 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
     try {
       const { exportPPTX: run } = await import("@/lib/exportPPTX");
       await run(campaigns, clientInfo);
+      triggerToast();
     } catch (e) { console.error("PPTX error:", e); }
     finally { setPptxLoading(false); }
   };
@@ -135,6 +143,41 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
           Export CSV
         </button>
       </div>
+
+      {/* Post-download toast */}
+      {showToast && (
+        <div style={{
+          position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+          background: "#0f172a", color: "white", borderRadius: 12,
+          padding: "14px 18px", zIndex: 9999,
+          display: "flex", alignItems: "center", gap: 14,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.35)", maxWidth: 500, width: "calc(100% - 48px)",
+        }}>
+          <span style={{ fontSize: 22, flexShrink: 0 }}>💾</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Report downloaded!</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.4 }}>
+              Save reports, schedule exports &amp; share with clients in MetriQuill Pro.
+            </div>
+          </div>
+          <a
+            href="https://metriquill.com?utm_source=metriquill-free&utm_medium=toast&utm_campaign=upgrade"
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              background: "var(--orange, #FF6B2B)", color: "white",
+              padding: "8px 14px", borderRadius: 8, fontWeight: 700,
+              fontSize: 13, textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
+            }}
+          >
+            Try Pro →
+          </a>
+          <button
+            onClick={() => setShowToast(false)}
+            style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 20, padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+      )}
     </div>
   );
 }

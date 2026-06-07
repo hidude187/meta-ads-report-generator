@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { CampaignData, ClientInfo, KPISummary } from "@/lib/types";
 import { calcKPIs } from "@/lib/csvParser";
 import { generateInsights } from "@/lib/formatters";
@@ -28,6 +29,7 @@ const sectionTitle = (text: string) => (
 export default function ReportDashboard({ campaigns, clientInfo }: Props) {
   const kpis: KPISummary = calcKPIs(campaigns);
   const insights = generateInsights(campaigns, clientInfo.currency);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -43,6 +45,34 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
           </span>
         </div>
       </div>
+
+      {/* Save-report banner */}
+      {!bannerDismissed && (
+        <div style={{
+          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+          borderRadius: "var(--radius)", padding: "14px 20px",
+          display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+          border: "1px solid rgba(255,107,43,0.22)",
+        }}>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>💾</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>Want to save this report?</span>
+            <span style={{ color: "#94a3b8", fontSize: 13, marginLeft: 8 }}>Access anytime, schedule exports &amp; share with clients.</span>
+          </div>
+          <a
+            href="https://metriquill.com?utm_source=metriquill-free&utm_medium=save-banner&utm_campaign=upgrade"
+            target="_blank" rel="noopener noreferrer"
+            style={{ background: "var(--orange, #FF6B2B)", color: "white", padding: "8px 16px", borderRadius: 8, fontWeight: 700, fontSize: 13, textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Try MetriQuill Pro →
+          </a>
+          <button
+            onClick={() => setBannerDismissed(true)}
+            style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 20, padding: "0 4px", lineHeight: 1, flexShrink: 0 }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+      )}
 
       {/* Export buttons at top */}
       <ExportButtons campaigns={campaigns} clientInfo={clientInfo} kpis={kpis} insights={insights} />
@@ -62,6 +92,35 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
       {/* Insights */}
       {sectionTitle("Insights & Recommendations")}
       <InsightsPanel insights={insights} />
+
+      {/* AI teaser card */}
+      <div style={{
+        padding: "18px 22px",
+        background: "linear-gradient(135deg, rgba(79,70,229,0.07) 0%, rgba(124,58,237,0.07) 100%)",
+        borderRadius: "var(--radius)", border: "1px solid rgba(79,70,229,0.18)",
+        display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+      }}>
+        <div style={{ fontSize: 30, flexShrink: 0 }}>🤖</div>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#4F46E5", marginBottom: 4 }}>
+            These insights are rule-based
+          </div>
+          <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.55 }}>
+            MetriQuill Pro uses AI to give you a layered Pre-Click → Post-Click → Economics diagnosis — not just flags.
+          </div>
+        </div>
+        <a
+          href="https://metriquill.com?utm_source=metriquill-free&utm_medium=ai-teaser&utm_campaign=upgrade"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            background: "#4F46E5", color: "white", padding: "10px 18px",
+            borderRadius: 8, fontWeight: 700, fontSize: 13,
+            textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
+          }}
+        >
+          Get AI Analysis →
+        </a>
+      </div>
     </div>
   );
 }

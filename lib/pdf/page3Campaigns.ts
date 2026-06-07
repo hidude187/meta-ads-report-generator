@@ -2,7 +2,7 @@
 import { PdfCtx } from "@/lib/pdf/types";
 import { CampaignData } from "@/lib/types";
 import { fmt, getCampaignBadge } from "@/lib/formatters";
-import { safeName } from "@/lib/pdf/pdfHelpers";
+import { safeName, addWatermark } from "@/lib/pdf/pdfHelpers";
 
 export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void {
   const { doc, W, H, br, bg, bb, cur, LF, pageFooter } = ctx;
@@ -73,5 +73,6 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
     doc.setFontSize(6); LF("normal"); doc.setTextColor(100, 116, 139); doc.text(l.desc, legX, legY);
     legX += doc.getTextWidth(l.desc) + 12;
   });
+  addWatermark(ctx);
   pageFooter(3);
 }

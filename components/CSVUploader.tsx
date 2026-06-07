@@ -168,6 +168,26 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
         }}>
           Load Demo Data (5 campaigns, {currency})
         </button>
+
+        {/* Platform callout */}
+        <div style={{
+          marginTop: 12, padding: "10px 14px",
+          background: "var(--blue-light)", borderRadius: 8,
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          border: "1px solid rgba(37,99,235,0.12)",
+        }}>
+          <span style={{ fontSize: 15, flexShrink: 0 }}>📊</span>
+          <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
+            Using <strong>Google Ads</strong> or <strong>TikTok</strong> data?
+          </span>
+          <a
+            href="https://metriquill.com?utm_source=metriquill-free&utm_medium=csv-callout&utm_campaign=upgrade"
+            target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: 12, fontWeight: 700, color: "var(--blue)", textDecoration: "none", whiteSpace: "nowrap" }}
+          >
+            Get multi-platform reports →
+          </a>
+        </div>
       </div>
     </div>
   );

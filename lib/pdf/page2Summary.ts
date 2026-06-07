@@ -2,6 +2,7 @@
 import { PdfCtx } from "@/lib/pdf/types";
 import { CampaignData, ClientInfo, KPISummary } from "@/lib/types";
 import { fmt, BENCHMARKS } from "@/lib/formatters";
+import { addWatermark } from "@/lib/pdf/pdfHelpers";
 
 export function drawSummaryPage(
   ctx: PdfCtx,
@@ -75,5 +76,6 @@ export function drawSummaryPage(
     doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.2); doc.line(20, y + 3, W - 20, y + 3);
     y += 10;
   });
+  addWatermark(ctx);
   pageFooter(2);
 }
