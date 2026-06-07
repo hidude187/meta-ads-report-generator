@@ -17,9 +17,12 @@ interface Props {
 }
 
 const sectionTitle = (text: string) => (
-  <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", margin: "8px 0 4px" }}>
-    {text}
-  </h2>
+  <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "12px 0 4px" }}>
+    <div style={{ width: 3, height: 18, borderRadius: 2, background: "var(--blue)", flexShrink: 0 }} />
+    <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", margin: 0, letterSpacing: "-0.2px" }}>
+      {text}
+    </h2>
+  </div>
 );
 
 export default function ReportDashboard({ campaigns, clientInfo }: Props) {

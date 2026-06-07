@@ -4,11 +4,24 @@ import { useState, useCallback } from "react";
 import Papa from "papaparse";
 import Navbar from "./Navbar";
 import ProBanner from "./ProBanner";
+import Footer from "./Footer";
 import ClientInfoForm from "./ClientInfoForm";
 import CSVUploader from "./CSVUploader";
 import ReportDashboard from "./ReportDashboard";
 import { parseCSV, extractCSVDates, generateDemoData } from "@/lib/csvParser";
 import { CampaignData, ClientInfo } from "@/lib/types";
+
+function StepArrow({ done }: { done?: boolean }) {
+  const color = done ? "var(--green, #22c55e)" : "var(--border)";
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "6px 0" }}>
+      <div style={{ width: 1, height: 14, background: color }} />
+      <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L6 6L11 1" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+}
 
 export default function ReportTool() {
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
@@ -79,10 +92,10 @@ export default function ReportTool() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", flexDirection: "column" }}>
       <Navbar />
       <ProBanner />
-      <main style={{ maxWidth: 1080, margin: "0 auto", padding: "32px 24px" }}>
+      <main style={{ maxWidth: 1080, margin: "0 auto", padding: "32px 24px", width: "100%", flex: 1 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>
           Generate Client Report
         </h1>
@@ -91,13 +104,14 @@ export default function ReportTool() {
           <strong>No login. No subscription. Free forever.</strong>
         </p>
 
-        <div style={{ display: "grid", gap: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <ClientInfoForm
             info={clientInfo}
             onChange={(info) => { setClientInfo(info); setInfoFilled(!!(info.clientName && info.dateFrom && info.dateTo)); }}
             onLogoUpload={handleLogoUpload}
             stepDone={infoFilled}
           />
+          <StepArrow />
           <CSVUploader
             onFile={handleFileUpload}
             onDemo={handleDemo}
@@ -106,13 +120,17 @@ export default function ReportTool() {
             currency={clientInfo.currency}
           />
           {campaigns.length > 0 && (
-            <ReportDashboard
-              campaigns={campaigns}
-              clientInfo={clientInfo}
-            />
+            <>
+              <StepArrow done />
+              <ReportDashboard
+                campaigns={campaigns}
+                clientInfo={clientInfo}
+              />
+            </>
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

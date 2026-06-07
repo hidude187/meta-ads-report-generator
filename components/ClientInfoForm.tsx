@@ -52,7 +52,7 @@ export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone 
         <span style={{ marginLeft: "auto", fontSize: 12, color: "var(--muted)" }}>All fields optional</span>
       </div>
       <div style={{ padding: 24 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)" }}>Client Name</span>
             <input
