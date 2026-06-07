@@ -5,7 +5,7 @@
 
   <a href="https://metriquill.com/free"><img src="https://img.shields.io/badge/Try%20It%20Live-metriquill.com%2Ffree-FF6B2B?style=for-the-badge" alt="Live Demo" /></a>
   <a href="https://github.com/hidude187/metriquill-free/stargazers"><img src="https://img.shields.io/github/stars/hidude187/metriquill-free?style=for-the-badge&color=E0408C" alt="Stars" /></a>
-  <img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" alt="MIT License" />
+  <img src="https://img.shields.io/badge/License-MIT%20%2B%20Commons%20Clause-22c55e?style=for-the-badge" alt="MIT + Commons Clause License" />
   <img src="https://img.shields.io/badge/No_Login_Required-✓-22c55e?style=for-the-badge" alt="No Login" />
 </div>
 
@@ -165,7 +165,10 @@ MetriQuill Free fixes that.
 
 ## License
 
-MIT — free to use, fork, and modify.
+**MIT + Commons Clause** — free to use, fork, and modify for personal or internal use.
+
+You may **not** sell this software or a substantially similar product as a commercial service.
+See the [LICENSE](./LICENSE) file for full terms.
 
 ---
 
