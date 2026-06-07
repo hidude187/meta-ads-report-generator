@@ -52,11 +52,11 @@ export function drawSummaryPage(
   y += 12;
 
   const rows = [
-    { label: "Avg CTR",       value: fmt(kpis.avgCTR, "percent"),             bench: "0.90%",  good: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) >= BENCHMARKS.ctr.good,       bad: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) < BENCHMARKS.ctr.poor },
-    { label: "Avg CPC",       value: fmt(kpis.avgCPC, "currency", cur),       bench: "$1.72",  good: (kpis.avgCPC || 0) > 0 && (kpis.avgCPC || 0) <= BENCHMARKS.cpc.good,      bad: (kpis.avgCPC || 0) > 0 && (kpis.avgCPC || 0) > BENCHMARKS.cpc.poor },
-    { label: "Avg CPM",       value: fmt(kpis.avgCPM, "currency", cur),       bench: "$14.00", good: (kpis.avgCPM || 0) > 0 && (kpis.avgCPM || 0) <= BENCHMARKS.cpm.good,      bad: (kpis.avgCPM || 0) > 0 && (kpis.avgCPM || 0) > BENCHMARKS.cpm.poor },
-    { label: "Avg ROAS",      value: fmt(kpis.avgROAS, "decimal") + "x",      bench: "2.19x",  good: (kpis.avgROAS || 0) > 0 && (kpis.avgROAS || 0) >= BENCHMARKS.roas.good,    bad: (kpis.avgROAS || 0) > 0 && (kpis.avgROAS || 0) < BENCHMARKS.roas.poor },
-    { label: "Avg Frequency", value: fmt(kpis.avgFrequency, "decimal") + "x", bench: "<2.5x",  good: (kpis.avgFrequency || 0) < 2.0,                                           bad: (kpis.avgFrequency || 0) >= BENCHMARKS.frequency.warn },
+    { label: "Avg CTR",       val: kpis.avgCTR || 0,       value: fmt(kpis.avgCTR, "percent"),             bench: "0.90%",  good: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) >= BENCHMARKS.ctr.good,       bad: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) < BENCHMARKS.ctr.poor },
+    { label: "Avg CPC",       val: kpis.avgCPC || 0,       value: fmt(kpis.avgCPC, "currency", cur),       bench: "$1.72",  good: (kpis.avgCPC || 0) > 0 && (kpis.avgCPC || 0) <= BENCHMARKS.cpc.good,      bad: (kpis.avgCPC || 0) > 0 && (kpis.avgCPC || 0) > BENCHMARKS.cpc.poor },
+    { label: "Avg CPM",       val: kpis.avgCPM || 0,       value: fmt(kpis.avgCPM, "currency", cur),       bench: "$14.00", good: (kpis.avgCPM || 0) > 0 && (kpis.avgCPM || 0) <= BENCHMARKS.cpm.good,      bad: (kpis.avgCPM || 0) > 0 && (kpis.avgCPM || 0) > BENCHMARKS.cpm.poor },
+    { label: "Avg ROAS",      val: kpis.avgROAS || 0,      value: fmt(kpis.avgROAS, "decimal") + "x",      bench: "2.19x",  good: (kpis.avgROAS || 0) > 0 && (kpis.avgROAS || 0) >= BENCHMARKS.roas.good,    bad: (kpis.avgROAS || 0) > 0 && (kpis.avgROAS || 0) < BENCHMARKS.roas.poor },
+    { label: "Avg Frequency", val: kpis.avgFrequency || 0, value: fmt(kpis.avgFrequency, "decimal") + "x", bench: "<2.5x",  good: (kpis.avgFrequency || 0) > 0 && (kpis.avgFrequency || 0) < 2.0,            bad: (kpis.avgFrequency || 0) >= BENCHMARKS.frequency.warn },
   ];
   doc.setFontSize(7.5); LF("bold"); doc.setTextColor(100, 116, 139);
   doc.text("Metric", 20, y); doc.text("Your Result", 100, y, { align: "right" });
@@ -69,9 +69,9 @@ export function drawSummaryPage(
     doc.setFontSize(8.5); LF("normal"); doc.setTextColor(15, 23, 42); doc.text(row.label, 20, y);
     LF("bold"); doc.text(row.value, 100, y, { align: "right" });
     LF("normal"); doc.setTextColor(100, 116, 139); doc.text(row.bench, 135, y, { align: "right" });
-    const rgb: [number, number, number] = row.good ? [5, 150, 105] : row.bad ? [220, 38, 38] : [100, 116, 139];
+    const rgb: [number, number, number] = row.val === 0 ? [148, 163, 184] : row.good ? [5, 150, 105] : row.bad ? [220, 38, 38] : [100, 116, 139];
     doc.setTextColor(...rgb); LF("bold");
-    doc.text(row.good ? "▲ Above avg" : row.bad ? "▼ Below avg" : "— On track", 165, y, { align: "right" });
+    doc.text(row.val === 0 ? "— N/A" : row.good ? "▲ Above avg" : row.bad ? "▼ Below avg" : "— On track", 165, y, { align: "right" });
     doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.2); doc.line(20, y + 3, W - 20, y + 3);
     y += 10;
   });

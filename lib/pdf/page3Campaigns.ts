@@ -2,11 +2,10 @@
 import { PdfCtx } from "@/lib/pdf/types";
 import { CampaignData } from "@/lib/types";
 import { fmt, getCampaignBadge } from "@/lib/formatters";
-import { hasArabic } from "@/lib/textUtils";
 import { safeName } from "@/lib/pdf/pdfHelpers";
 
 export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void {
-  const { doc, W, H, br, bg, bb, cur, hasAmiri, LF, AF, pageFooter } = ctx;
+  const { doc, W, H, br, bg, bb, cur, LF, pageFooter } = ctx;
 
   doc.addPage();
   doc.setFillColor(255, 255, 255); doc.rect(0, 0, W, H, "F");
@@ -31,10 +30,9 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
     const roasRgb: [number, number, number] = roasVal >= 3 ? [5, 150, 105] : roasVal >= 1.5 ? [217, 119, 6] : [220, 38, 38];
     doc.setFillColor(...roasRgb); doc.circle(22, rowY - 1.5, 1.5, "F");
 
-    const rowName = safeName(c.name, i, 28, hasAmiri);
+    const rowName = safeName(c.name, i, 28);
     doc.setFontSize(7);
-    if (hasArabic(c.name) && hasAmiri) { AF(); doc.setTextColor(15, 23, 42); doc.text(rowName, tX[0] + 5, rowY); LF("normal"); }
-    else { LF("normal"); doc.setTextColor(15, 23, 42); doc.text(rowName, tX[0] + 5, rowY); }
+    LF("normal"); doc.setTextColor(15, 23, 42); doc.text(rowName, tX[0] + 5, rowY);
 
     const badge = getCampaignBadge(c);
     if (badge) {

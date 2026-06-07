@@ -14,8 +14,6 @@ export type PdfCtx = {
   // dark variant RGB channels
   dr: number; dg: number; db: number;
   cur: string;
-  hasAmiri: boolean;
   LF: (s?: "bold" | "normal") => void;
-  AF: () => void;
   pageFooter: (pageNum: number) => void;
 };

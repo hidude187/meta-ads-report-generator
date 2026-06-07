@@ -2,14 +2,13 @@
 import { PdfCtx } from "@/lib/pdf/types";
 import { ClientInfo, KPISummary } from "@/lib/types";
 import { fmt } from "@/lib/formatters";
-import { hasArabic, reverseArabic } from "@/lib/textUtils";
 
 export function drawCoverPage(
   ctx: PdfCtx,
   clientInfo: ClientInfo,
   kpis: KPISummary,
 ): void {
-  const { doc, W, H, br, bg, bb, dr, dg, db, cur, hasAmiri, LF, AF } = ctx;
+  const { doc, W, H, br, bg, bb, dr, dg, db, cur, LF } = ctx;
 
   // Dark background + brand sidebar
   doc.setFillColor(10, 15, 30); doc.rect(0, 0, W, H, "F");
@@ -34,24 +33,16 @@ export function drawCoverPage(
   doc.setDrawColor(br, bg, bb); doc.setLineWidth(0.4);
   doc.line(24, logoBottom + 20, W - 20, logoBottom + 20);
 
-  // Client name
+  // Client name — Arabic text renders as-is (jsPDF has no shaping support regardless of font)
   const cName = clientInfo.clientName || "Client Name";
   doc.setTextColor(241, 245, 249); doc.setFontSize(36);
-  if (hasArabic(cName) && hasAmiri) {
-    AF(); doc.text(reverseArabic(cName), W - 20, logoBottom + 56, { align: "right" });
-  } else {
-    LF("bold"); doc.text(doc.splitTextToSize(cName, W - 44), 24, logoBottom + 56);
-  }
+  LF("bold"); doc.text(doc.splitTextToSize(cName, W - 44), 24, logoBottom + 56);
   LF("normal");
 
   // Agency + date
   if (clientInfo.agencyName) {
     doc.setFontSize(11); doc.setTextColor(br, bg, bb);
-    if (hasArabic(clientInfo.agencyName) && hasAmiri) {
-      AF(); doc.text(reverseArabic(clientInfo.agencyName), W - 20, logoBottom + 76, { align: "right" }); LF("normal");
-    } else {
-      doc.text(clientInfo.agencyName, 24, logoBottom + 76);
-    }
+    LF("normal"); doc.text(clientInfo.agencyName, 24, logoBottom + 76);
   }
   if (clientInfo.dateFrom && clientInfo.dateTo) {
     doc.setFontSize(10); doc.setTextColor(148, 163, 184);
