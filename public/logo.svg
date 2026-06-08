@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%">
+  <g fill="#FF6B2B" stroke="#FF6B2B">
+    
+    <path d="M 889.4 657.3 
+             A 420 420 0 1 0 615.8 903.7" 
+          fill="none" 
+          stroke-width="62" 
+          stroke-linecap="butt" />
+
+    <g transform="translate(500, 500)" stroke="none">
+      <rect x="-31" y="-180" width="62" height="360" rx="31" />
+      <rect x="-31" y="-180" width="62" height="360" rx="31" transform="rotate(60)" />
+      <rect x="-31" y="-180" width="62" height="360" rx="31" transform="rotate(120)" />
+    </g>
+
+    <polygon points="735,725 960,815 860,860 815,960" 
+             stroke-width="32" 
+             stroke-linejoin="round" />
+             
+  </g>
+</svg>

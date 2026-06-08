@@ -44,7 +44,17 @@ export const metadata: Metadata = {
     canonical: "https://metriquill.com/free",
   },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon.ico", type: "image/x-icon" },
+    ],
+    apple: { url: "/favicon/apple-touch-icon.png" },
+    other: [
+      { rel: "android-chrome-192", url: "/favicon/android-chrome-192x192.png" },
+      { rel: "android-chrome-512", url: "/favicon/android-chrome-512x512.png" },
+    ],
   },
   openGraph: {
     title:       "MetriQuill Free — Meta Ads Report Generator",
@@ -54,7 +64,7 @@ export const metadata: Metadata = {
     type:        "website",
     images: [
       {
-        url:    "https://metriquill-free.vercel.app/android-chrome-512x512.png",
+        url:    "https://free.metriquill.com/favicon/android-chrome-512x512.png",
         width:  512,
         height: 512,
         alt:    "MetriQuill Free — Meta Ads Report Generator",
@@ -65,7 +75,7 @@ export const metadata: Metadata = {
     card:        "summary",
     title:       "MetriQuill Free — Meta Ads Report Generator",
     description: "No login. No API. Upload CSV → get branded PDF in 30 seconds. Free forever.",
-    images:      ["https://metriquill-free.vercel.app/android-chrome-512x512.png"],
+    images:      ["https://free.metriquill.com/favicon/android-chrome-512x512.png"],
     creator:     "@metriquill",
   },
   keywords: [
