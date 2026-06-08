@@ -24,7 +24,15 @@ export function drawCoverPage(
   // Logo
   let logoBottom = 30;
   if (clientInfo.logoDataUrl) {
-    try { doc.addImage(clientInfo.logoDataUrl, "PNG", 24, 22, 38, 16); logoBottom = 46; } catch { /**/ }
+    try {
+      const imgFmt = clientInfo.logoDataUrl.startsWith('data:image/jpeg') || clientInfo.logoDataUrl.startsWith('data:image/jpg')
+        ? 'JPEG'
+        : clientInfo.logoDataUrl.startsWith('data:image/webp')
+          ? 'WEBP'
+          : 'PNG';
+      doc.addImage(clientInfo.logoDataUrl, imgFmt, 24, 22, 38, 16);
+      logoBottom = 46;
+    } catch { /**/ }
   }
 
   // Report label + divider

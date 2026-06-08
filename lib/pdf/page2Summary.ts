@@ -34,10 +34,11 @@ export function drawSummaryPage(
       ? `Generated ${fmt(totalConv, "number")} conversions at an average cost of ${fmt(avgCPA, "currency", cur)} per acquisition.`
       : `No conversion data available for this period.`,
     top ? `Top performer: "${top.name}" at ${top.roas.toFixed(1)}x ROAS.` : "",
-    avgCTR >= 1.49
-      ? `Average CTR of ${avgCTR.toFixed(2)}% is above the industry benchmark of 1.49%.`
-      : `Average CTR of ${avgCTR.toFixed(2)}% is below the industry benchmark of 1.49% — creative refresh may help.`,
-  ].filter(Boolean);
+    avgCTR === 0 ? null
+      : avgCTR >= 1.49
+        ? `Average CTR of ${avgCTR.toFixed(2)}% is above the industry benchmark of 1.49%.`
+        : `Average CTR of ${avgCTR.toFixed(2)}% is below the industry benchmark of 1.49% — creative refresh may help.`,
+  ].filter((x): x is string => Boolean(x));
 
   let y = 52;
   summaryLines.forEach(line => {
@@ -72,7 +73,7 @@ export function drawSummaryPage(
     LF("normal"); doc.setTextColor(100, 116, 139); doc.text(row.bench, 135, y, { align: "right" });
     const rgb: [number, number, number] = row.val === 0 ? [148, 163, 184] : row.good ? [5, 150, 105] : row.bad ? [220, 38, 38] : [100, 116, 139];
     doc.setTextColor(...rgb); LF("bold");
-    doc.text(row.val === 0 ? "— N/A" : row.good ? "▲ Above avg" : row.bad ? "▼ Below avg" : "— On track", 165, y, { align: "right" });
+    doc.text(row.val === 0 ? "— N/A" : row.good ? "+ Above avg" : row.bad ? "- Below avg" : "On track", 165, y, { align: "right" });
     doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.2); doc.line(20, y + 3, W - 20, y + 3);
     y += 10;
   });

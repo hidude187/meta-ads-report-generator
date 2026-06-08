@@ -6,7 +6,18 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
   const insights: string[] = [];
   if (!campaigns.length) return insights;
 
-  const cap = (name: string, max = 40) => name.length > max ? name.slice(0, max) + '…' : name;
+  // Strip Arabic, emojis, and other non-jsPDF-renderable chars; fall back to "this campaign"
+  const cap = (name: string, max = 40) => {
+    const safe = name
+      .replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '') // Arabic
+      .replace(/[\u200E\u200F\u202A-\u202E]/g, '')  // RTL/LTR marks
+      .replace(/[\u{1F000}-\u{1FFFF}]|[\u2600-\u27FF]/gu, '') // emoji
+      .replace(/[^\x20-\x7E\u00C0-\u024F]/g, '') // keep ASCII + Latin Extended only
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    if (!safe || safe.length < 2) return 'this campaign';
+    return safe.length > max ? safe.slice(0, max - 1) + '...' : safe;
+  };
 
   const totalSpend = campaigns.reduce((s, c) => s + c.spend, 0);
   const totalConversions = campaigns.reduce((s, c) => s + c.conversions, 0);
