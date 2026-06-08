@@ -3,11 +3,11 @@ import { PdfCtx } from "@/lib/pdf/types";
 import { ClientInfo, KPISummary } from "@/lib/types";
 import { fmt } from "@/lib/formatters";
 
-export function drawCoverPage(
+export async function drawCoverPage(
   ctx: PdfCtx,
   clientInfo: ClientInfo,
   kpis: KPISummary,
-): void {
+): Promise<void> {
   const { doc, W, H, br, bg, bb, dr, dg, db, cur, LF } = ctx;
 
   // Dark background + brand sidebar
@@ -21,7 +21,7 @@ export function drawCoverPage(
   // Footer bar
   doc.setFillColor(dr, dg, db); doc.rect(0, H - 18, W, 18, "F");
 
-  // Logo
+  // Logo — preserve aspect ratio within 55×22 mm bounding box
   let logoBottom = 30;
   if (clientInfo.logoDataUrl) {
     try {
@@ -30,8 +30,15 @@ export function drawCoverPage(
         : clientInfo.logoDataUrl.startsWith('data:image/webp')
           ? 'WEBP'
           : 'PNG';
-      doc.addImage(clientInfo.logoDataUrl, imgFmt, 24, 22, 38, 16);
-      logoBottom = 46;
+      const img = new Image();
+      img.src = clientInfo.logoDataUrl;
+      await new Promise<void>(r => { img.onload = () => r(); });
+      const ratio = img.naturalWidth / img.naturalHeight;
+      const maxW = 55, maxH = 22;
+      const w = ratio > maxW / maxH ? maxW : maxH * ratio;
+      const h = ratio > maxW / maxH ? maxW / ratio : maxH;
+      doc.addImage(clientInfo.logoDataUrl, imgFmt, 24, 22, w, h);
+      logoBottom = 22 + h + 8;
     } catch { /**/ }
   }
 

@@ -7,6 +7,7 @@ export function drawInsightsPage(ctx: PdfCtx, insights: string[]): void {
 
   doc.addPage();
   doc.setFillColor(255, 255, 255); doc.rect(0, 0, W, H, "F");
+  addWatermark(ctx);
   doc.setFillColor(br, bg, bb); doc.rect(0, 0, W, 2, "F");
   doc.setFillColor(248, 250, 252); doc.rect(0, 2, W, 40, "F");
   doc.setFontSize(20); LF("bold"); doc.setTextColor(15, 23, 42); doc.text("Campaign Insights", 20, 26);
@@ -40,6 +41,5 @@ export function drawInsightsPage(ctx: PdfCtx, insights: string[]): void {
     doc.setFontSize(9); LF("normal"); doc.setTextColor(100, 116, 139);
     doc.text("No insights generated.", 20, 60);
   }
-  addWatermark(ctx);
   pageFooter(4);
 }

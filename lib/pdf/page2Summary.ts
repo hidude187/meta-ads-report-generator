@@ -14,6 +14,7 @@ export function drawSummaryPage(
 
   doc.addPage();
   doc.setFillColor(255, 255, 255); doc.rect(0, 0, W, H, "F");
+  addWatermark(ctx);
   doc.setFillColor(br, bg, bb); doc.rect(0, 0, W, 2, "F");
   doc.setFillColor(248, 250, 252); doc.rect(0, 2, W, 40, "F");
   doc.setFontSize(20); LF("bold"); doc.setTextColor(15, 23, 42); doc.text("Executive Summary", 20, 26);
@@ -77,6 +78,5 @@ export function drawSummaryPage(
     doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.2); doc.line(20, y + 3, W - 20, y + 3);
     y += 10;
   });
-  addWatermark(ctx);
   pageFooter(2);
 }

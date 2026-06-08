@@ -1,5 +1,4 @@
-// app/icon.tsx — auto-generated MetriQuill favicon (Next.js App Router)
-// This overrides app/favicon.ico with a branded PNG icon in the <head>.
+// app/icon.tsx — MetriQuill branded favicon (Next.js App Router)
 import { ImageResponse } from 'next/og';
 
 export const size = { width: 32, height: 32 };
@@ -15,22 +14,42 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #FF6B2B 0%, #E04E12 100%)',
-          borderRadius: 7,
+          background: 'linear-gradient(135deg, #FF6B2B 0%, #9333EA 100%)',
+          borderRadius: 8,
         }}
       >
-        <span
+        <div
           style={{
-            color: '#ffffff',
-            fontSize: 16,
-            fontWeight: 800,
-            letterSpacing: -0.5,
-            lineHeight: 1,
-            fontFamily: 'sans-serif',
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 0,
           }}
         >
-          M
-        </span>
+          <span
+            style={{
+              color: '#ffffff',
+              fontSize: 13,
+              fontWeight: 900,
+              letterSpacing: -1,
+              lineHeight: 1,
+              fontFamily: 'sans-serif',
+            }}
+          >
+            M
+          </span>
+          <span
+            style={{
+              color: 'rgba(255,255,255,0.75)',
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: -0.5,
+              lineHeight: 1,
+              fontFamily: 'sans-serif',
+            }}
+          >
+            Q
+          </span>
+        </div>
       </div>
     ),
     { ...size }

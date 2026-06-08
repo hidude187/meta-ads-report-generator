@@ -9,13 +9,14 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
 
   doc.addPage();
   doc.setFillColor(255, 255, 255); doc.rect(0, 0, W, H, "F");
+  addWatermark(ctx);
   doc.setFillColor(br, bg, bb); doc.rect(0, 0, W, 2, "F");
   doc.setFillColor(248, 250, 252); doc.rect(0, 2, W, 40, "F");
   doc.setFontSize(20); LF("bold"); doc.setTextColor(15, 23, 42); doc.text("Campaign Breakdown", 20, 26);
   doc.setFontSize(9); LF("normal"); doc.setTextColor(100, 116, 139); doc.text(`${campaigns.length} campaigns`, 20, 36);
 
   const tCols = ["Campaign", "Spend", "Impr.", "CTR", "CPC", "CPA", "Conv.", "ROAS"];
-  const tX    = [20, 90, 115, 137, 153, 167, 181, 193];
+  const tX    = [20, 88, 112, 134, 149, 163, 177, 190];
   const tHY   = 50;
   doc.setFillColor(15, 23, 42); doc.rect(20, tHY - 5, W - 40, 10, "F");
   doc.setFontSize(6.5); LF("bold"); doc.setTextColor(255, 255, 255);
@@ -55,9 +56,13 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
     doc.text(c.cpa > 0 ? fmt(c.cpa, "currency", cur) : "—", tX[5], rowY);
     doc.text(fmt(c.conversions, "number"), tX[6], rowY);
     const roasText = roasVal > 0 ? fmt(roasVal, "decimal") + "x" : "—";
-    doc.setFillColor(...roasRgb); doc.setGState(doc.GState({ opacity: 0.12 }));
-    doc.roundedRect(tX[7] - 1, rowY - 5, 18, 7, 1.5, 1.5, "F"); doc.setGState(doc.GState({ opacity: 1 }));
-    doc.setFontSize(6.5); LF("bold"); doc.setTextColor(...roasRgb); doc.text(roasText, tX[7] + 1, rowY);
+    if (roasVal > 0) {
+      doc.setFillColor(...roasRgb); doc.setGState(doc.GState({ opacity: 0.12 }));
+      doc.roundedRect(tX[7] - 1, rowY - 5, 16, 7, 1.5, 1.5, "F"); doc.setGState(doc.GState({ opacity: 1 }));
+      doc.setFontSize(6.5); LF("bold"); doc.setTextColor(...roasRgb); doc.text(roasText, tX[7] + 1, rowY);
+    } else {
+      doc.setFontSize(6.5); LF("normal"); doc.setTextColor(100, 116, 139); doc.text(roasText, tX[7] + 1, rowY);
+    }
   });
 
   const legY = tHY + 10 + Math.min(campaigns.length, Math.floor((H - 40 - tHY) / 12)) * 12 + 8;
@@ -73,6 +78,5 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
     doc.setFontSize(6); LF("normal"); doc.setTextColor(100, 116, 139); doc.text(l.desc, legX, legY);
     legX += doc.getTextWidth(l.desc) + 12;
   });
-  addWatermark(ctx);
   pageFooter(3);
 }

@@ -13,6 +13,7 @@ export function drawRecsPage(
 
   doc.addPage();
   doc.setFillColor(255, 255, 255); doc.rect(0, 0, W, H, "F");
+  addWatermark(ctx);
   doc.setFillColor(br, bg, bb); doc.rect(0, 0, W, 2, "F");
   doc.setFillColor(248, 250, 252); doc.rect(0, 2, W, 40, "F");
   doc.setFontSize(20); LF("bold"); doc.setTextColor(15, 23, 42); doc.text("Recommendations", 20, 26);
@@ -51,6 +52,5 @@ export function drawRecsPage(
 
   // Suppress unused var warning — clientInfo reserved for future personalisation
   void clientInfo;
-  addWatermark(ctx);
   pageFooter(5);
 }

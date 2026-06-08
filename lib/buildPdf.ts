@@ -42,7 +42,7 @@ export async function buildPdf(
   const ctx: PdfCtx = { doc, W, H, br, bg, bb, dr, dg, db, cur, LF, pageFooter };
 
   // Draw pages (each page module calls doc.addPage() except page 1)
-  drawCoverPage(ctx, clientInfo, kpis);
+  await drawCoverPage(ctx, clientInfo, kpis);
   drawSummaryPage(ctx, campaigns, clientInfo, kpis);
   drawCampaignsPage(ctx, campaigns);
   drawInsightsPage(ctx, insights);
