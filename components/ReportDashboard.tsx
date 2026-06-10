@@ -54,7 +54,11 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
           display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
           border: "1px solid rgba(255,107,43,0.22)",
         }}>
-          <span style={{ fontSize: 18, flexShrink: 0 }}>💾</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>Want to save this report?</span>
             <span style={{ color: "#94a3b8", fontSize: 13, marginLeft: 8 }}>Access anytime, schedule exports &amp; share with clients.</span>
@@ -100,7 +104,11 @@ export default function ReportDashboard({ campaigns, clientInfo }: Props) {
         borderRadius: "var(--radius)", border: "1px solid rgba(79,70,229,0.18)",
         display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
       }}>
-        <div style={{ fontSize: 30, flexShrink: 0 }}>🤖</div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
+          <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
+          <path d="M19 2l.5 1.5L21 4l-1.5.5L19 6l-.5-1.5L17 4l1.5-.5L19 2z"/>
+          <path d="M5 18l.5 1.5L7 20l-1.5.5L5 22l-.5-1.5L3 20l1.5-.5L5 18z"/>
+        </svg>
         <div style={{ flex: 1, minWidth: 180 }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#4F46E5", marginBottom: 4 }}>
             These insights are rule-based

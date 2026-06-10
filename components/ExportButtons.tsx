@@ -153,7 +153,11 @@ export default function ExportButtons({ campaigns, clientInfo, kpis, insights = 
           display: "flex", alignItems: "center", gap: 14,
           boxShadow: "0 8px 32px rgba(0,0,0,0.35)", maxWidth: 500, width: "calc(100% - 48px)",
         }}>
-          <span style={{ fontSize: 22, flexShrink: 0 }}>💾</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Report downloaded!</div>
             <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.4 }}>

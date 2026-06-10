@@ -21,36 +21,50 @@ export function drawRecsPage(
   doc.text("Suggested actions for the next reporting period", 20, 36);
 
   const recs = generateRecommendations(campaigns, cur);
-  const bulletColors: [number, number, number][] = [
+  const palette: [number, number, number][] = [
     [5, 150, 105], [220, 38, 38], [245, 158, 11], [99, 102, 241], [59, 130, 246],
   ];
+
   let y = 54;
   recs.forEach((rec, i) => {
-    const [rR, rG, rB] = bulletColors[i % bulletColors.length];
-    doc.setFillColor(rR, rG, rB); doc.circle(24, y - 1, 2.5, "F");
-    doc.setFillColor(rR, rG, rB); doc.setGState(doc.GState({ opacity: 0.06 }));
-    doc.roundedRect(20, y - 8, W - 40, 20, 3, 3, "F");
-    doc.setGState(doc.GState({ opacity: 1 }));
-    const wrapped = doc.splitTextToSize(rec, W - 55);
-    doc.setFontSize(9); LF("normal"); doc.setTextColor(15, 23, 42); doc.text(wrapped, 30, y);
-    y += wrapped.length * 5.5 + 14;
+    const [rR, rG, rB] = palette[i % palette.length];
+    const wrapped = doc.splitTextToSize(rec, W - 62);
+    const lineH = 5.5;
+    const cardPadV = 10;
+    const cardH = Math.max(26, wrapped.length * lineH + cardPadV * 2);
+
+    if (y + cardH > H - 36) return;
+
+    // Card background
+    doc.setFillColor(248, 250, 252); doc.roundedRect(20, y, W - 40, cardH, 2.5, 2.5, "F");
+    // Left accent bar
+    doc.setFillColor(rR, rG, rB); doc.roundedRect(20, y, 3.5, cardH, 1.5, 1.5, "F");
+    // Numbered badge
+    doc.setFillColor(rR, rG, rB); doc.circle(33, y + 9, 5.5, "F");
+    doc.setFontSize(7); LF("bold"); doc.setTextColor(255, 255, 255);
+    doc.text(`${i + 1}`, 33, y + 9 + 1.8, { align: "center" });
+    // Text
+    doc.setFontSize(9); LF("normal"); doc.setTextColor(15, 23, 42);
+    doc.text(wrapped, 43, y + cardPadV);
+
+    y += cardH + 8;
   });
 
-  // Upsell banner
-  y += 4;
-  doc.setFillColor(br, bg, bb); doc.setGState(doc.GState({ opacity: 0.08 }));
-  doc.roundedRect(20, y, W - 40, 28, 4, 4, "F");
-  doc.setGState(doc.GState({ opacity: 1 }));
-  doc.setFillColor(br, bg, bb); doc.rect(20, y, 3, 28, "F");
-  doc.setFontSize(10); LF("bold"); doc.setTextColor(br, bg, bb);
-  doc.text("Upgrade to MetriQuill Pro", 26, y + 10);
-  doc.setFontSize(8.5); LF("normal"); doc.setTextColor(51, 65, 85);
-  doc.text(
-    "Get AI-powered analysis, budget reallocation recommendations, and industry-specific benchmarks.",
-    26, y + 20,
-  );
+  // ── Upsell banner ─────────────────────────────────────────────────────────
+  const bannerY = y + 6;
+  if (bannerY + 32 < H - 20) {
+    doc.setFillColor(br, bg, bb); doc.setGState(doc.GState({ opacity: 0.07 }));
+    doc.roundedRect(20, bannerY, W - 40, 32, 3, 3, "F");
+    doc.setGState(doc.GState({ opacity: 1 }));
+    doc.setFillColor(br, bg, bb); doc.roundedRect(20, bannerY, 3.5, 32, 1.5, 1.5, "F");
+    doc.setFontSize(10); LF("bold"); doc.setTextColor(br, bg, bb);
+    doc.text("Upgrade to MetriQuill Pro", 27, bannerY + 12);
+    doc.setFontSize(8.5); LF("normal"); doc.setTextColor(51, 65, 85);
+    const upsell = "Get AI-powered analysis, budget reallocation recommendations, and industry-specific benchmarks.";
+    doc.text(doc.splitTextToSize(upsell, W - 55), 27, bannerY + 22);
+  }
 
-  // Suppress unused var warning — clientInfo reserved for future personalisation
+  // Suppress unused var — clientInfo reserved for future personalisation
   void clientInfo;
   pageFooter(5);
 }

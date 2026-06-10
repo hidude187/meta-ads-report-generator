@@ -176,7 +176,9 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
           border: "1px solid rgba(37,99,235,0.12)",
         }}>
-          <span style={{ fontSize: 15, flexShrink: 0 }}>📊</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }} aria-hidden="true">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
           <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
             Using <strong>Google Ads</strong> or <strong>TikTok</strong> data?
           </span>

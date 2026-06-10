@@ -18,7 +18,8 @@ export function drawCampaignsPage(ctx: PdfCtx, campaigns: CampaignData[]): void 
   const tCols = ["Campaign", "Spend", "Impr.", "CTR", "CPC", "CPA", "Conv.", "ROAS"];
   const tX    = [20, 88, 112, 134, 149, 163, 177, 190];
   const tHY   = 50;
-  doc.setFillColor(15, 23, 42); doc.rect(20, tHY - 5, W - 40, 10, "F");
+  // Brand-colour header row (not dark navy)
+  doc.setFillColor(br, bg, bb); doc.rect(20, tHY - 5, W - 40, 10, "F");
   doc.setFontSize(6.5); LF("bold"); doc.setTextColor(255, 255, 255);
   tCols.forEach((col, i) => doc.text(col, tX[i], tHY));
 

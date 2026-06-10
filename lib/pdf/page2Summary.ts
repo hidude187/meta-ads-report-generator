@@ -50,9 +50,12 @@ export function drawSummaryPage(
 
   // Benchmark table header
   y += 8;
-  doc.setFillColor(248, 250, 252); doc.roundedRect(20, y, W - 40, 8, 2, 2, "F");
-  doc.setFontSize(10); LF("bold"); doc.setTextColor(15, 23, 42); doc.text("KPI vs Industry Benchmarks", 26, y + 5.5);
-  y += 12;
+  doc.setFillColor(br, bg, bb); doc.setGState(doc.GState({ opacity: 0.07 }));
+  doc.roundedRect(20, y, W - 40, 9, 2, 2, "F");
+  doc.setGState(doc.GState({ opacity: 1 }));
+  doc.setFontSize(10); LF("bold"); doc.setTextColor(br, bg, bb);
+  doc.text("KPI vs Industry Benchmarks", 26, y + 6.2);
+  y += 13;
 
   const rows = [
     { label: "Avg CTR",       val: kpis.avgCTR || 0,       value: fmt(kpis.avgCTR, "percent"),             bench: "0.90%",  good: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) >= BENCHMARKS.ctr.good,       bad: (kpis.avgCTR || 0) > 0 && (kpis.avgCTR || 0) < BENCHMARKS.ctr.poor },

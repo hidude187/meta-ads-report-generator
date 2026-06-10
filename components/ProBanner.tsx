@@ -14,8 +14,11 @@ export default function ProBanner() {
       gap: 12,
       flexWrap: "wrap",
     }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "#FF6B2B", letterSpacing: "0.2px", whiteSpace: "nowrap" }}>
-        ⚡ MetriQuill Pro
+      <span style={{ fontSize: 12, fontWeight: 700, color: "#FF6B2B", letterSpacing: "0.2px", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5 }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF6B2B" aria-hidden="true">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        MetriQuill Pro
       </span>
 
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
