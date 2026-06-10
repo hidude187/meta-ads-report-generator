@@ -23,11 +23,8 @@ export function drawInsightsPage(ctx: PdfCtx, insights: string[]): void {
   let y = 54;
   insights.forEach((text, i) => {
     const [iR, iG, iB] = accents[i % accents.length];
-    // Strip emoji / non-Latin chars jsPDF cannot render
-    const clean = text
-      .replace(/[\u{1F000}-\u{1FFFF}]|[\u2600-\u27FF]|\u26A0\uFE0F|\u26D4|\uD83D[\uDE80-\uDEFF]/gu, "")
-      .replace(/⚠️|⛔|🚀|🔁|💰|📉|📊|🛑|⏳/g, "")
-      .trim();
+    // Strip [TAG] prefix — clean string for jsPDF rendering
+    const clean = text.replace(/^\[[A-Z]+\]\s*/, "").trim();
     const wrapped = doc.splitTextToSize(clean, W - 62);
     const lineH = 5.3;
     const cardPadV = 10;

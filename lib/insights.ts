@@ -29,7 +29,7 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
 
   if (best && best.roas >= 3) {
     const spendPct = totalSpend > 0 ? ((best.spend / totalSpend) * 100).toFixed(0) : '0';
-    insights.push(`🚀 Scale "${cap(best.name)}" — ${best.roas.toFixed(1)}x ROAS is your top performer (${spendPct}% of spend). Increase budget 20–30% to capture more volume without disrupting the algorithm.`);
+    insights.push(`[SCALE] Scale "${cap(best.name)}" — ${best.roas.toFixed(1)}x ROAS is your top performer (${spendPct}% of spend). Increase budget 20–30% to capture more volume without disrupting the algorithm.`);
   }
 
   if (worst && worst.roas < 1.5 && worst.spend > totalSpend * 0.08) {
@@ -37,21 +37,21 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
     const note = type === 'retargeting'
       ? 'Audience may be exhausted — try a fresh creative or expand the custom audience.'
       : 'Pause or restructure creative and targeting.';
-    insights.push(`⛔ Review "${cap(worst.name)}" — ${worst.roas.toFixed(1)}x ROAS is below break-even. ${note}`);
+    insights.push(`[REVIEW] Review "${cap(worst.name)}" — ${worst.roas.toFixed(1)}x ROAS is below break-even. ${note}`);
   }
 
   const highCTRLowConv = campaigns.filter(c => c.ctr >= 1.2 && c.conversions === 0 && c.clicks > 50);
   if (highCTRLowConv.length) {
     const names = highCTRLowConv.map(c => `"${cap(c.name)}"`).join(', ');
-    insights.push(`⚠️ ${names} ${highCTRLowConv.length > 1 ? 'have' : 'has'} strong CTR but zero conversions — the ad is getting clicks but the landing page or offer isn't converting. Check page load speed, form errors, and offer clarity.`);
+    insights.push(`[WARN] ${names} ${highCTRLowConv.length > 1 ? 'have' : 'has'} strong CTR but zero conversions — the ad is getting clicks but the landing page or offer isn't converting. Check page load speed, form errors, and offer clarity.`);
   }
 
   const fatigueCampaigns = campaigns.filter(c => (c.frequency ?? 0) >= BENCHMARKS.frequency.warn);
   const dangerCampaigns  = campaigns.filter(c => (c.frequency ?? 0) >= BENCHMARKS.frequency.danger);
   if (dangerCampaigns.length) {
-    insights.push(`🔁 Ad fatigue — ${dangerCampaigns.map(c => `"${cap(c.name)}" (${(c.frequency??0).toFixed(1)}x)`).join(', ')} exceeded frequency 4.0. Audiences are oversaturated. Pause and rotate creatives immediately.`);
+    insights.push(`[FATIGUE] Ad fatigue — ${dangerCampaigns.map(c => `"${cap(c.name)}" (${(c.frequency??0).toFixed(1)}x)`).join(', ')} exceeded frequency 4.0. Audiences are oversaturated. Pause and rotate creatives immediately.`);
   } else if (fatigueCampaigns.length) {
-    insights.push(`🔁 Frequency warning on ${fatigueCampaigns.map(c => `"${cap(c.name)}"`).join(', ')} — frequency above 2.5 signals early fatigue. Start preparing fresh creatives now.`);
+    insights.push(`[FATIGUE] Frequency warning on ${fatigueCampaigns.map(c => `"${cap(c.name)}"`).join(', ')} — frequency above 2.5 signals early fatigue. Start preparing fresh creatives now.`);
   }
 
   const topSpender = [...campaigns].sort((a, b) => b.spend - a.spend)[0];
@@ -61,7 +61,7 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
       const roasNote = topSpender.roas >= 2.5
         ? `with strong ${topSpender.roas.toFixed(1)}x ROAS — justified, but consider diversifying.`
         : `but ROAS is only ${topSpender.roas > 0 ? topSpender.roas.toFixed(1)+'x' : 'unmeasured'} — high concentration risk.`;
-      insights.push(`💰 "${cap(topSpender.name)}" absorbs ${pct.toFixed(0)}% of total spend ${roasNote}`);
+      insights.push(`[BUDGET] "${cap(topSpender.name)}" absorbs ${pct.toFixed(0)}% of total spend ${roasNote}`);
     }
   }
 
@@ -71,7 +71,7 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
     if (bestCPA && avgCPA > 0) {
       const saving = avgCPA - bestCPA.cpa;
       if (saving > avgCPA * 0.3) {
-        insights.push(`📉 "${cap(bestCPA.name)}" has your lowest CPA at ${fmt(bestCPA.cpa,'currency',currency)} vs. account average of ${fmt(avgCPA,'currency',currency)}. Shifting budget toward this campaign could reduce cost per acquisition by ${fmt(saving,'currency',currency)}.`);
+        insights.push(`[SAVINGS] "${cap(bestCPA.name)}" has your lowest CPA at ${fmt(bestCPA.cpa,'currency',currency)} vs. account average of ${fmt(avgCPA,'currency',currency)}. Shifting budget toward this campaign could reduce cost per acquisition by ${fmt(saving,'currency',currency)}.`);
       }
     }
   }
@@ -81,22 +81,22 @@ export function generateInsights(campaigns: CampaignData[], currency: string): s
     return type !== 'awareness' && c.ctr > 0 && c.ctr < BENCHMARKS.ctr.poor && c.spend > 200;
   });
   if (lowCTR.length && insights.length < 5) {
-    insights.push(`📊 ${lowCTR.map(c => `"${cap(c.name)}"`).join(', ')} ${lowCTR.length > 1 ? 'have' : 'has'} CTR below 0.72% (industry average: 0.90%). Audience-ad mismatch — test new creative angles or tighten targeting.`);
+    insights.push(`[CTR] ${lowCTR.map(c => `"${cap(c.name)}"`).join(', ')} ${lowCTR.length > 1 ? 'have' : 'has'} CTR below 0.72% (industry average: 0.90%). Audience-ad mismatch — test new creative angles or tighten targeting.`);
   }
 
   const freqDanger = campaigns.filter(c => (c.frequency ?? 0) >= 4.5);
   if (freqDanger.length) {
-    insights.push(`🛑 Don't pause ${freqDanger.map(c => `"${cap(c.name)}"`).join(', ')} yet — frequency above 4.5 feels alarming but pausing resets the algorithm's learning phase. Instead: refresh the creative with a new angle, keep the same targeting and budget.`);
+    insights.push(`[NOREACT] Don't pause ${freqDanger.map(c => `"${cap(c.name)}"`).join(', ')} yet — frequency above 4.5 feels alarming but pausing resets the algorithm's learning phase. Instead: refresh the creative with a new angle, keep the same targeting and budget.`);
   }
 
   const highCPMEarly = campaigns.filter(c => c.cpm > BENCHMARKS.cpm.poor && c.spend < 150 && c.impressions < 10000);
   if (highCPMEarly.length && insights.length < 7) {
-    insights.push(`⏳ ${highCPMEarly.map(c => `"${cap(c.name)}"`).join(', ')} ${highCPMEarly.length > 1 ? 'show' : 'shows'} high CPM but with limited spend — CPM fluctuates heavily in the first 48–72 hours. Wait until each campaign has at least $150 spend before making CPM-based decisions.`);
+    insights.push(`[EARLY] ${highCPMEarly.map(c => `"${cap(c.name)}"`).join(', ')} ${highCPMEarly.length > 1 ? 'show' : 'shows'} high CPM but with limited spend — CPM fluctuates heavily in the first 48–72 hours. Wait until each campaign has at least $150 spend before making CPM-based decisions.`);
   }
 
   const singleDayRisk = campaigns.filter(c => c.roas > 0 && c.roas < 1.8 && c.roas >= 1.2 && c.conversions > 0 && c.conversions < 5 && c.spend < 300);
   if (singleDayRisk.length && insights.length < 7) {
-    insights.push(`⚠️ Don't make structural changes to ${singleDayRisk.map(c => `"${cap(c.name)}"`).join(', ')} based on this data. Under 5 conversions means the ROAS reading is statistically unreliable — wait for at least 10 conversions before pausing, scaling, or changing creative.`);
+    insights.push(`[WARN] Don't make structural changes to ${singleDayRisk.map(c => `"${cap(c.name)}"`).join(', ')} based on this data. Under 5 conversions means the ROAS reading is statistically unreliable — wait for at least 10 conversions before pausing, scaling, or changing creative.`);
   }
 
   return insights.slice(0, 8);

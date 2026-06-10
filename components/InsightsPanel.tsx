@@ -2,30 +2,31 @@
 
 interface Props { insights: string[]; }
 
-// Strip leading emoji from insight string (emoji stays in raw string for accent detection)
-function stripEmoji(text: string): string {
-  return text.replace(/^[\u{1F300}-\u{1FFFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{231A}-\u{23FF}\u{25AA}-\u{27BF}]\s*/u, "");
+// Strip leading [TAG] prefix from insight string before display
+function stripTag(text: string): string {
+  return text.replace(/^\[[A-Z]+\]\s*/, "");
 }
 
-// Color-code based on emoji prefix (accent left-border + number color)
+// Map [TAG] prefix → accent colour (left-border + number colour)
 function insightAccent(text: string): string {
-  if (text.startsWith("🚀")) return "#059669"; // scale = green
-  if (text.startsWith("⛔")) return "#DC2626"; // review = red
-  if (text.startsWith("⚠️")) return "#D97706"; // warning = amber
-  if (text.startsWith("🔁")) return "#D97706"; // fatigue = amber
-  if (text.startsWith("💰")) return "#4F46E5"; // budget = indigo
-  if (text.startsWith("📉")) return "#059669"; // savings = green
-  if (text.startsWith("📊")) return "#2563EB"; // CTR = blue
-  if (text.startsWith("🛑")) return "#DC2626"; // don't react = red
-  if (text.startsWith("⏳")) return "#7C3AED"; // too early = purple
+  if (text.startsWith("[SCALE]"))   return "#059669"; // green
+  if (text.startsWith("[REVIEW]"))  return "#DC2626"; // red
+  if (text.startsWith("[WARN]"))    return "#D97706"; // amber
+  if (text.startsWith("[FATIGUE]")) return "#D97706"; // amber
+  if (text.startsWith("[BUDGET]"))  return "#4F46E5"; // indigo
+  if (text.startsWith("[SAVINGS]")) return "#059669"; // green
+  if (text.startsWith("[CTR]"))     return "#2563EB"; // blue
+  if (text.startsWith("[NOREACT]")) return "#DC2626"; // red
+  if (text.startsWith("[EARLY]"))   return "#7C3AED"; // purple
   return "#2563EB";
 }
 
+// Map [TAG] prefix → optional category badge
 function insightCategory(text: string): { label: string; bg: string; color: string } | null {
-  if (text.startsWith("🛑") || (text.startsWith("⚠️") && text.includes("Don't make"))) {
+  if (text.startsWith("[NOREACT]") || (text.startsWith("[WARN]") && text.includes("Don't make"))) {
     return { label: "Don't React", bg: "rgba(220,38,38,0.08)", color: "#DC2626" };
   }
-  if (text.startsWith("⏳")) {
+  if (text.startsWith("[EARLY]")) {
     return { label: "Too Early", bg: "rgba(124,58,237,0.08)", color: "#7C3AED" };
   }
   return null;
@@ -35,7 +36,7 @@ export default function InsightsPanel({ insights }: Props) {
   if (!insights.length) return null;
 
   const dontReactCount = insights.filter(i =>
-    i.startsWith("🛑") || i.startsWith("⏳") || (i.startsWith("⚠️") && i.includes("Don't make"))
+    i.startsWith("[NOREACT]") || i.startsWith("[EARLY]") || (i.startsWith("[WARN]") && i.includes("Don't make"))
   ).length;
 
   return (
@@ -91,7 +92,7 @@ export default function InsightsPanel({ insights }: Props) {
                   }}>{category.label}</span>
                 )}
                 <div style={{ fontSize: 13.5, lineHeight: 1.65, color: "var(--text2)" }}>
-                  {stripEmoji(insight)}
+                  {stripTag(insight)}
                 </div>
               </div>
             </div>

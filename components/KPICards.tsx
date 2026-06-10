@@ -32,17 +32,17 @@ function benchmarkLabel(key: string): string | null {
 }
 
 const CARDS = [
-  { key: "totalSpend",       label: "Total Spend",   type: "currency", color: "#FF6B2B", icon: "💰" },
-  { key: "avgROAS",          label: "Avg ROAS",      type: "decimal",  color: "#10B981", icon: "📈", suffix: "x" },
-  { key: "totalConversions", label: "Conversions",   type: "number",   color: "#8B5CF6", icon: "✅" },
-  { key: "avgCPA",           label: "Avg CPA",       type: "currency", color: "#F59E0B", icon: "🎯" },
-  { key: "totalImpressions", label: "Impressions",   type: "number",   color: "#6366F1", icon: "👁️" },
-  { key: "totalReach",       label: "Reach",         type: "number",   color: "#0891B2", icon: "📡" },
-  { key: "avgFrequency",     label: "Avg Frequency", type: "decimal",  color: "#D97706", icon: "🔁", suffix: "x" },
-  { key: "totalClicks",      label: "Clicks",        type: "number",   color: "#0891B2", icon: "🖱️" },
-  { key: "avgCTR",           label: "Avg CTR",       type: "percent",  color: "#059669", icon: "📊" },
-  { key: "avgCPC",           label: "Avg CPC",       type: "currency", color: "#DC2626", icon: "💸" },
-  { key: "avgCPM",           label: "CPM",           type: "currency", color: "#7C3AED", icon: "📢" },
+  { key: "totalSpend",       label: "Total Spend",   type: "currency", color: "#FF6B2B" },
+  { key: "avgROAS",          label: "Avg ROAS",      type: "decimal",  color: "#10B981", suffix: "x" },
+  { key: "totalConversions", label: "Conversions",   type: "number",   color: "#8B5CF6" },
+  { key: "avgCPA",           label: "Avg CPA",       type: "currency", color: "#F59E0B" },
+  { key: "totalImpressions", label: "Impressions",   type: "number",   color: "#6366F1" },
+  { key: "totalReach",       label: "Reach",         type: "number",   color: "#0891B2" },
+  { key: "avgFrequency",     label: "Avg Frequency", type: "decimal",  color: "#D97706", suffix: "x" },
+  { key: "totalClicks",      label: "Clicks",        type: "number",   color: "#0891B2" },
+  { key: "avgCTR",           label: "Avg CTR",       type: "percent",  color: "#059669" },
+  { key: "avgCPC",           label: "Avg CPC",       type: "currency", color: "#DC2626" },
+  { key: "avgCPM",           label: "CPM",           type: "currency", color: "#7C3AED" },
 ] as const;
 
 export default function KPICards({ kpis, currency }: Props) {
