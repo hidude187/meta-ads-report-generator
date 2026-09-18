@@ -5,7 +5,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "MetriQuill Free",
-  url: "https://metriquill.com/free",
+  url: "https://free.metriquill.com",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Any",
   browserRequirements: "Requires JavaScript",
@@ -39,9 +39,9 @@ export const metadata: Metadata = {
   title: "MetriQuill Free — Meta Ads CSV to PDF Report Generator",
   description:
     "Turn your Facebook Ads CSV export into a branded PDF report in 30 seconds. No login. No subscription. Free forever.",
-  metadataBase: new URL("https://metriquill.com"),
+  metadataBase: new URL("https://free.metriquill.com"),
   alternates: {
-    canonical: "https://metriquill.com/free",
+    canonical: "https://free.metriquill.com",
   },
   icons: {
     icon: [
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   openGraph: {
     title:       "MetriQuill Free — Meta Ads Report Generator",
     description: "No login. No API. Upload CSV → get branded PDF in 30 seconds. Free forever.",
-    url:         "https://metriquill.com/free",
+    url:         "https://free.metriquill.com",
     siteName:    "MetriQuill Free",
     type:        "website",
     images: [
