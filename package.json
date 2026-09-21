@@ -1,12 +1,28 @@
 {
   "name": "metriquill-free",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Free Meta Ads report generator: upload a Facebook Ads Manager CSV and get a branded PDF client report, PowerPoint deck and PNG share card in 30 seconds. No login, runs in your browser.",
-  "keywords": ["meta-ads", "facebook-ads", "ad-reporting", "client-reporting", "report-generator", "pdf", "pptx", "csv", "nextjs", "typescript"],
+  "keywords": [
+    "meta-ads",
+    "facebook-ads",
+    "ad-reporting",
+    "client-reporting",
+    "report-generator",
+    "pdf",
+    "pptx",
+    "csv",
+    "nextjs",
+    "typescript"
+  ],
   "homepage": "https://free.metriquill.com",
-  "repository": { "type": "git", "url": "git+https://github.com/hidude187/metriquill-free.git" },
-  "bugs": { "url": "https://github.com/hidude187/metriquill-free/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hidude187/metriquill-free.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hidude187/metriquill-free/issues"
+  },
   "license": "SEE LICENSE IN LICENSE",
   "author": "MetriQuill (https://metriquill.com)",
   "scripts": {

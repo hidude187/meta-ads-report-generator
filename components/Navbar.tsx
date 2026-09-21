@@ -32,7 +32,16 @@ export default function Navbar() {
         </span>
       </div>
 
-      {/* CTA */}
+      {/* Links */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <a
+          href="https://github.com/hidude187/metriquill-free"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-github"
+        >
+          GitHub
+        </a>
       <a
         href="https://metriquill.com?utm_source=free-tool&utm_medium=navbar&utm_campaign=upgrade"
         className="btn-primary"
@@ -48,6 +57,7 @@ export default function Navbar() {
       >
         Get Full Access →
       </a>
+      </div>
     </nav>
   );
 }
