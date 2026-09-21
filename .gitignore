@@ -47,3 +47,4 @@ MEMORY.md
 REMEDIATION.md
 *.bat
 commit_msg.txt
+tsc_out.txt
