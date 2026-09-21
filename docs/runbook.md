@@ -53,8 +53,8 @@ The `normalizeKey` function lowercases and trims, so casing doesn't matter.
 
 ## Add a New Currency
 
-1. Open `components/ClientInfoForm.tsx`
-2. Add the ISO code to the `CURRENCIES` array, for example `"MAD"`
+1. Open `lib/constants.ts`
+2. Add the ISO code to the `CURRENCIES` array, for example `"CAD"`
 3. The `fmt()` function uses `Intl.NumberFormat` — it supports all ISO 4217 codes automatically
 
 ## Change Benchmark Values
