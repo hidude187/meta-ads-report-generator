@@ -35,7 +35,7 @@ export default function Navbar() {
       {/* Links */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <a
-          href="https://github.com/hidude187/metriquill-free"
+          href="https://github.com/hidude187/meta-ads-report-generator"
           target="_blank"
           rel="noopener noreferrer"
           className="nav-github"

@@ -8,8 +8,8 @@
 
   <a href="https://free.metriquill.com"><img src="https://img.shields.io/badge/Live%20tool-free.metriquill.com-FF6B2B?style=for-the-badge" alt="Open the live tool" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT%20%2B%20Commons%20Clause-22c55e?style=for-the-badge" alt="License: MIT + Commons Clause" /></a>
-  <a href="https://github.com/hidude187/metriquill-free/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/hidude187/metriquill-free/ci.yml?branch=main&style=for-the-badge&label=build" alt="Build status" /></a>
-  <a href="https://github.com/hidude187/metriquill-free/stargazers"><img src="https://img.shields.io/github/stars/hidude187/metriquill-free?style=for-the-badge&color=E0408C" alt="GitHub stars" /></a>
+  <a href="https://github.com/hidude187/meta-ads-report-generator/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/hidude187/meta-ads-report-generator/ci.yml?branch=main&style=for-the-badge&label=build" alt="Build status" /></a>
+  <a href="https://github.com/hidude187/meta-ads-report-generator/stargazers"><img src="https://img.shields.io/github/stars/hidude187/meta-ads-report-generator?style=for-the-badge&color=E0408C" alt="GitHub stars" /></a>
 
   <br /><br />
   <img src="docs/screenshots/03-kpis.png" alt="MetriQuill Free report dashboard: KPI cards with benchmark health indicators and export buttons" width="820" />
@@ -158,8 +158,8 @@ Your CSV is parsed in your browser and never uploaded. The code contains no back
 Requires Node.js 20.9 or newer. No environment variables or API keys are needed.
 
 ```bash
-git clone https://github.com/hidude187/metriquill-free.git
-cd metriquill-free
+git clone https://github.com/hidude187/meta-ads-report-generator.git
+cd meta-ads-report-generator
 npm install
 npm run dev
 ```
@@ -179,7 +179,7 @@ Open http://localhost:3000. More in [`docs/onboarding.md`](docs/onboarding.md), 
 
 ## Roadmap
 
-Planned work is tracked in the [open issues](https://github.com/hidude187/metriquill-free/issues):
+Planned work is tracked in the [open issues](https://github.com/hidude187/meta-ads-report-generator/issues):
 
 - [ ] TikTok Ads CSV support
 - [ ] Google Ads CSV support

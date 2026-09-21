@@ -7,6 +7,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Changed
 
 - README, GitHub description and topics reworked so the project is easier to find in search.
+- Repository renamed from `metriquill-free` to `meta-ads-report-generator` so the name matches what people search for. The old URL redirects.
 - Structured data on the live tool no longer claims Arabic support in the PDF (Arabic client names are supported on the PNG card only) and now links to this repository.
 
 ## [1.0.0] - 2026-09-21

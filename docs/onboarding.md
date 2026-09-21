@@ -11,8 +11,8 @@ Get from zero to running locally in under 10 minutes.
 ## Clone and Install
 
 ```bash
-git clone https://github.com/hidude187/metriquill-free.git
-cd metriquill-free
+git clone https://github.com/hidude187/meta-ads-report-generator.git
+cd meta-ads-report-generator
 npm install
 ```
 

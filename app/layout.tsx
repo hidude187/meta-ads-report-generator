@@ -6,7 +6,7 @@ const jsonLd = {
   "@type": "WebApplication",
   name: "MetriQuill Free",
   url: "https://free.metriquill.com",
-  sameAs: ["https://github.com/hidude187/metriquill-free"],
+  sameAs: ["https://github.com/hidude187/meta-ads-report-generator"],
   applicationCategory: "BusinessApplication",
   operatingSystem: "Any",
   browserRequirements: "Requires JavaScript",

@@ -16,7 +16,7 @@ export default function Footer() {
       <span>© {year} MetriQuill · Free Ad Report Generator</span>
       <span style={{ color: "var(--border)" }}>·</span>
       <a
-        href="https://github.com/hidude187/metriquill-free"
+        href="https://github.com/hidude187/meta-ads-report-generator"
         target="_blank"
         rel="noopener noreferrer"
         style={{ color: "var(--muted)", textDecoration: "none", opacity: 0.8 }}

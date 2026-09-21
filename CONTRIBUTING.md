@@ -15,8 +15,8 @@ Issues labeled `good first issue` or `help wanted` are the easiest way in.
 Requires Node.js 20.9 or newer.
 
 ```bash
-git clone https://github.com/<your-username>/metriquill-free.git
-cd metriquill-free
+git clone https://github.com/<your-username>/meta-ads-report-generator.git
+cd meta-ads-report-generator
 npm install
 npm run dev
 ```
