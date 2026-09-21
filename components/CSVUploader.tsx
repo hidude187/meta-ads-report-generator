@@ -115,7 +115,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
             </p>
             <p style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.6, margin: 0 }}>
               If Spend, Clicks, and CTR all show as 0, your export is missing the cost columns.
-              This happens when you export "Post Engagement" or "Reach" campaigns without
+              This happens when you export &quot;Post Engagement&quot; or &quot;Reach&quot; campaigns without
               customizing the columns first. Follow the steps above and re-export.
             </p>
           </div>

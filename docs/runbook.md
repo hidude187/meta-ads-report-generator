@@ -53,8 +53,8 @@ The `normalizeKey` function lowercases and trims, so casing doesn't matter.
 
 ## Add a New Currency
 
-1. Open `lib/constants.ts`
-2. Add to the `CURRENCIES` array: `{ code: "MAD", label: "MAD — Moroccan Dirham" }`
+1. Open `components/ClientInfoForm.tsx`
+2. Add the ISO code to the `CURRENCIES` array, for example `"MAD"`
 3. The `fmt()` function uses `Intl.NumberFormat` — it supports all ISO 4217 codes automatically
 
 ## Change Benchmark Values
@@ -70,8 +70,8 @@ To add a new rule, add a new `if` block and push to the `insights` array.
 
 ## Common Errors
 
-See `ERRORS.md` in the project root for a full log. Key ones:
+Known pitfalls:
 
 - **SSR crash on Chart.js / jsPDF**: always use `dynamic(() => import(...), { ssr: false })`
-- **NODE_ENV conflict on Windows**: prefix every dev command with `set NODE_ENV=development &&`
+- **NODE_ENV conflict on Windows**: if `NODE_ENV=production` is set globally, prefix dev commands with `set NODE_ENV=development &&`
 - **jsPDF v4 import**: use `import { jsPDF } from 'jspdf'` not the default import

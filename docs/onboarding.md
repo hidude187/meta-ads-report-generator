@@ -4,9 +4,9 @@ Get from zero to running locally in under 10 minutes.
 
 ## Prerequisites
 
-- Node.js v18+ (v24 recommended)
+- Node.js 20.9+ (22 or newer recommended)
 - npm v9+
-- Windows: always prefix Next.js dev commands with `set NODE_ENV=development &&`
+- If `NODE_ENV=production` is set globally on your machine (common on Windows), prefix dev commands with `set NODE_ENV=development &&` (cmd) or `$env:NODE_ENV='development';` (PowerShell)
 
 ## Clone and Install
 
@@ -28,7 +28,7 @@ set NODE_ENV=development && npx next dev
 npm run dev
 ```
 
-Open http://localhost:3000/free
+Open http://localhost:3000
 
 ## Understand the Repo in 10 Minutes
 

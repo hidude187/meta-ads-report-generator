@@ -5,9 +5,9 @@
 ```
 app/
   layout.tsx            Root layout — Google Fonts, JSON-LD schema, OG meta
-  page.tsx              Redirects to /free
+  page.tsx              Entry point: renders ReportToolClient (the tool lives at the site root)
   globals.css           CSS variables (design tokens) + global styles
-  free/page.tsx         Entry point — renders ReportToolClient
+  free/page.tsx         Legacy path: redirects to /
 
 components/
   ReportToolClient.tsx  Client boundary wrapper (dynamic import of ReportTool)
@@ -33,6 +33,8 @@ lib/
   insights.ts           generateInsights(), generateRecommendations()
   colors.ts             hexToRgb(), darkenHex(), lightenHex(), hexNoHash()
   exportPPTX.ts         PowerPoint export — pptxgenjs, 6 slides (dynamic import)
+  buildPdf.ts           PDF export entry (jsPDF, 5 pages); page modules live in lib/pdf/
+  buildPng.ts           PNG share card (Canvas API, 1200x675)
 ```
 
 ## Data Flow

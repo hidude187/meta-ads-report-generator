@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Try the live tool
+    url: https://free.metriquill.com
+    about: Generate a report from a Meta Ads CSV in your browser, no login needed.

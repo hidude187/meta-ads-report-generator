@@ -1,178 +1,153 @@
 <div align="center">
-  <img src="public/metriquill logo.png" alt="MetriQuill Logo" width="180" />
+  <img src="public/logo.svg" alt="MetriQuill logo" width="88" />
   <h1>MetriQuill Free</h1>
-  <p><strong>Meta Ads CSV → Branded PDF Report in 30 seconds. No login. No subscription. Free forever.</strong></p>
+  <p>
+    <strong>Turn a Meta Ads CSV into a branded client report in 30 seconds.</strong><br />
+    Free. No login. Your data stays in your browser.
+  </p>
 
-  <a href="https://metriquill.com/free"><img src="https://img.shields.io/badge/Try%20It%20Live-metriquill.com%2Ffree-FF6B2B?style=for-the-badge" alt="Live Demo" /></a>
-  <a href="https://github.com/hidude187/metriquill-free/stargazers"><img src="https://img.shields.io/github/stars/hidude187/metriquill-free?style=for-the-badge&color=E0408C" alt="Stars" /></a>
-  <img src="https://img.shields.io/badge/License-MIT%20%2B%20Commons%20Clause-22c55e?style=for-the-badge" alt="MIT + Commons Clause License" />
-  <img src="https://img.shields.io/badge/No_Login_Required-✓-22c55e?style=for-the-badge" alt="No Login" />
+  <a href="https://free.metriquill.com"><img src="https://img.shields.io/badge/Live%20tool-free.metriquill.com-FF6B2B?style=for-the-badge" alt="Open the live tool" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT%20%2B%20Commons%20Clause-22c55e?style=for-the-badge" alt="License: MIT + Commons Clause" /></a>
+  <a href="https://github.com/hidude187/metriquill-free/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/hidude187/metriquill-free/ci.yml?branch=main&style=for-the-badge&label=build" alt="Build status" /></a>
+  <a href="https://github.com/hidude187/metriquill-free/stargazers"><img src="https://img.shields.io/github/stars/hidude187/metriquill-free?style=for-the-badge&color=E0408C" alt="GitHub stars" /></a>
+
+  <br /><br />
+  <img src="docs/screenshots/03-kpis.png" alt="MetriQuill Free report dashboard: KPI cards with benchmark health indicators and export buttons" width="820" />
 </div>
 
----
+## What it does
 
-## What It Does
+MetriQuill Free is a Meta Ads (Facebook and Instagram Ads) report generator. Export your campaigns from Meta Ads Manager as a CSV, add your client and brand details, and get a client-ready report: no account, no ad-account connection, no subscription.
 
-Upload your **Facebook / Meta Ads Manager CSV export** and instantly generate:
+| Output | What you get |
+| --- | --- |
+| **PDF report** | 5 pages: branded cover, executive summary with benchmarks, campaign breakdown, insights, recommendations |
+| **PowerPoint deck** | 6 editable slides for client presentations |
+| **PNG share card** | 1200x675 image for WhatsApp, Slack or LinkedIn |
+| **Clean CSV** | UTF-8 with BOM, opens correctly in Excel |
 
-| Output | Description |
-|---|---|
-| 📄 **PDF Report (5 pages)** | Cover + executive summary + campaign breakdown + insights + recommendations |
-| 🖼️ **Social PNG (1200×675)** | Share-ready card for WhatsApp / Slack / LinkedIn |
-| 📊 **PowerPoint Deck** | Editable slides for client presentations |
-| 📥 **Clean CSV** | Normalized data with CPA column added |
+Everything runs in your browser. There is no backend, no database and no login.
 
-**Your data never leaves your browser. No backend. No cookies. No tracking.**
+## See it in action
 
----
+**1. Add client details:** client and agency name, dates, currency, brand color and your logo.
 
-## Screenshots
+<img src="docs/screenshots/01-form.png" alt="Client and report info form with client name, agency name, dates, currency, brand color and logo upload" width="820" />
 
-### Tool Interface — Fill in client info, upload CSV, pick your brand color
+**2. Upload your CSV** (or load the demo data to try the full flow).
 
-![Tool interface showing client info form and CSV upload](public/screenshots/1.png)
+<img src="docs/screenshots/02-upload.png" alt="CSV upload step with drag and drop area and demo data button" width="820" />
 
-### Report Dashboard — KPI cards at a glance
+**3. Read the charts:** spend, results and efficiency by campaign.
 
-![KPI cards showing spend, impressions, CTR, ROAS](public/screenshots/2.png)
+<img src="docs/screenshots/04-charts.png" alt="Visual analysis charts for spend, results and efficiency by campaign" width="820" />
 
-### Campaign Performance Breakdown
+**4. Spot winners and problems:** every campaign gets a health badge (TOP, REVIEW or WATCH).
 
-![Campaign table with health badges and metrics](public/screenshots/3.png)
+<img src="docs/screenshots/05-campaigns.png" alt="Campaign breakdown table with health dots and TOP, REVIEW and WATCH badges" width="820" />
 
-### Charts — Spend distribution and ROAS comparison
+**5. Get insights and next steps** written in plain language.
 
-![Bar and donut charts for campaign analysis](public/screenshots/4.png)
+<img src="docs/screenshots/06-insights.png" alt="Insights and recommendations panel" width="820" />
 
-### AI-Style Insights Panel
+### The exported PDF
 
-![Insights panel with color-coded recommendations](public/screenshots/5.png)
+<p align="center">
+  <img src="docs/screenshots/pdf-cover.png" alt="PDF report cover page with agency logo and brand color" width="270" />
+  <img src="docs/screenshots/pdf-summary.png" alt="PDF executive summary with KPIs and benchmark comparison" width="270" />
+  <img src="docs/screenshots/pdf-campaigns.png" alt="PDF campaign breakdown page" width="270" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/pdf-insights.png" alt="PDF campaign insights page" width="270" />
+  <img src="docs/screenshots/pdf-recommendations.png" alt="PDF recommendations page" width="270" />
+</p>
 
-### Export Options — PDF, PNG, PPTX, CSV
+### The PNG share card
 
-![Export buttons and download options](public/screenshots/6.png)
-
-### Generated PDF Report
-
-![Generated branded PDF report preview](public/screenshots/7.png)
-
----
+<p align="center">
+  <img src="docs/screenshots/share-card.png" alt="1200 by 675 PNG share card with the main KPIs" width="600" />
+</p>
 
 ## Features
 
-### Report Intelligence
-- **CPA calculated automatically** from spend ÷ conversions
-- **Campaign health badges** — TOP / REVIEW / WATCH based on ROAS + frequency
-- **Benchmark comparisons** — your CTR, ROAS, CPC, CPM vs 2025 industry averages (▲ / ▼)
-- **Ad fatigue detection** — frequency warning at 2.5×, danger flag at 4.0×
-- **Campaign type awareness** — awareness campaigns aren't judged by ROAS
-- **CTR vs Conversion diagnostic** — flags high-CTR / zero-conversion as a landing page problem
-- **Rules-based insights** — scale winners, pause losers, budget concentration alerts
+**Reporting intelligence**
 
-### PDF Structure (5 pages)
-1. Branded cover — logo, agency name, date range, KPI summary boxes
-2. Executive summary — narrative paragraph + KPI vs benchmark table
-3. Campaign breakdown — spend, impressions, CTR, CPC, CPA, conversions, ROAS
-4. Campaign insights — color-coded by performance tier
-5. Actionable recommendations for next period
+- 11 KPI cards, each compared against 2025-2026 cross-industry benchmarks with health indicators and tooltips.
+- CPA is calculated for you (Meta does not export it).
+- Campaign health badges (TOP, REVIEW, WATCH) based on ROAS, CTR, spend and frequency.
+- Ad fatigue detection: frequency warning at 2.5 and danger flag at 4.0.
+- Awareness campaigns are not judged by ROAS.
+- Diagnostics such as "strong CTR but zero conversions" (a landing page or offer problem).
+- Rules-based insights and recommendations you can read and change in [`lib/insights.ts`](lib/insights.ts). No AI, no guesswork.
 
-### Customization
-- **Logo upload** — your logo appears on PDF cover and PNG export
-- **Brand color picker** — applied throughout the entire report
-- **Arabic RTL support** — Amiri font embedded in PDF
-- **Demo data** — test the full flow without a real CSV
+**Made for agencies**
 
----
+- Your logo (up to 2 MB) and brand color on the PDF cover and the PNG card.
+- 10 currencies: USD, EUR, GBP, TRY and MENA currencies (AED, SAR, MAD, DZD, TND, EGP).
+- Recognizes common Meta column-name variants (see `KEY_MAP` in [`lib/csvParser.ts`](lib/csvParser.ts)).
+- A demo data button so you can try everything without a CSV.
 
-## Supported Currencies
+## Privacy
 
-**USD · EUR · GBP · DZD · SAR · AED · MAD · TND · EGP · TRY**
+Your CSV is parsed in your browser and never uploaded. The code contains no backend calls, analytics, cookies or local storage. The only third-party request is a web font (Amiri, used for Arabic client names on the PNG card), loaded from Google Fonts when you export.
 
-The only free reporting tool with proper MENA currency support.
+## Limits and known gaps
 
----
+- CSV files up to 20 MB; the first 2,000 rows are used.
+- Built for standard Meta Ads Manager exports.
+- Arabic: client names render on the PNG card. In the PDF, campaign names that contain Arabic are replaced with "Campaign 1, 2, ..." for now.
+- Benchmarks are generic cross-industry values, not per vertical.
+- Insights are rules, not AI.
 
-## How to Use
+## Export the right CSV from Meta Ads Manager
 
-1. Go to **[metriquill.com/free](https://metriquill.com/free)**
-2. Enter client name, agency name, date range, currency, brand color
-3. Upload your Meta Ads CSV (from Ads Manager → Reports → Export Table Data)
-4. Click **Generate Report**
-5. Download PDF / PNG / PPTX / CSV
+1. Open Meta Ads Manager and go to the **Campaigns** tab.
+2. Click **Columns**, then **Customize Columns**, and select: Amount spent, Impressions, Reach, Link clicks, CTR (link click-through rate), CPC (cost per link click), CPM (cost per 1,000 impressions), Results, Purchase ROAS (return on ad spend).
+3. Click **Apply**, then **Export**, then **Export Table Data**, then **CSV**.
+4. Upload the file at [free.metriquill.com](https://free.metriquill.com).
 
-That's it. 30 seconds.
+If Spend, Clicks and CTR all show as 0, the export is missing the cost columns. Re-export with the columns above.
 
----
+## Run it locally
 
-## How to Export a Meta Ads CSV
-
-1. Open **Meta Ads Manager**
-2. Select your campaigns
-3. Click **Reports** → **Export Table Data**
-4. Choose **CSV** format
-5. Upload the downloaded file to MetriQuill
-
-The tool handles Facebook's inconsistent column naming automatically (`Amount Spent`, `Spend`, `amount_spent` all map correctly).
-
----
-
-## Running Locally
+Requires Node.js 20.9 or newer. No environment variables or API keys are needed.
 
 ```bash
-git clone https://github.com/hidude187/metriquill-free
+git clone https://github.com/hidude187/metriquill-free.git
 cd metriquill-free
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000/free](http://localhost:3000/free)
+Open http://localhost:3000. More in [`docs/onboarding.md`](docs/onboarding.md), and the module map in [`docs/architecture.md`](docs/architecture.md).
 
----
-
-## Tech Stack
+## Tech stack
 
 | Layer | Library |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| Charts | Chart.js |
+| --- | --- |
+| Framework | Next.js 16 (App Router), React 19, TypeScript |
+| Charts | Chart.js with react-chartjs-2 |
 | PDF | jsPDF |
-| CSV Parsing | PapaParse |
 | PowerPoint | PptxGenJS |
-| Styling | Tailwind CSS |
-
-No backend. No database. No cookies. 100% client-side.
-
----
-
-## Why This Exists
-
-Every paid reporting tool (Whatagraph $199/mo, AgencyAnalytics $12/client/mo, DashThis $49/mo) requires OAuth setup, monthly subscriptions, and accounts. There was no free, no-login, open-source option for the "I exported a CSV and need a PDF in 60 seconds" workflow — especially for freelancers and agencies in MENA markets.
-
-MetriQuill Free fixes that.
-
----
+| CSV parsing | PapaParse |
+| Styling | Inline CSS with CSS variables (design tokens) |
 
 ## Roadmap
 
 - [ ] TikTok Ads CSV support
 - [ ] Google Ads CSV support
-- [ ] Period comparison (vs previous month)
-- [ ] Arabic UI (RTL layout toggle)
-- [ ] French UI
-- [ ] More regional benchmarks
+- [ ] Period comparison (this month vs last month)
+- [ ] Arabic and French interface, and full Arabic support in the PDF
+- [ ] More regional and per-vertical benchmarks
 
----
+## Contributing
+
+Bug reports, CSV edge cases and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md). Issues labeled `good first issue` are the easiest way in. Please never attach real client data: paste only the CSV header row.
 
 ## License
 
-**MIT + Commons Clause** — free to use, fork, and modify for personal or internal use.
+MIT + Commons Clause (source-available). Free to use, fork and modify for personal or internal use. You may not sell the software, or a product or service whose value comes substantially from it. Full terms in [LICENSE](LICENSE).
 
-You may **not** sell this software or a substantially similar product as a commercial service.
-See the [LICENSE](./LICENSE) file for full terms.
+## About
 
----
-
-<div align="center">
-  Made with ☕ by <a href="https://metriquill.com">MetriQuill</a><br/>
-  Need AI-powered analysis, client management, and scheduled reports? <a href="https://metriquill.com"><strong>Try MetriQuill Pro →</strong></a>
-</div>
+Made by [MetriQuill](https://metriquill.com?utm_source=github&utm_medium=readme&utm_campaign=free-repo). Need saved reports, client management, scheduled exports and multi-platform analysis? See [MetriQuill Pro](https://metriquill.com?utm_source=github&utm_medium=readme&utm_campaign=free-repo).
