@@ -127,7 +127,7 @@ It reads Meta Ads Manager exports, which include Instagram placements. Google Ad
 
 ### Can I put my agency's logo and brand color on the report?
 
-Yes. Upload your logo (up to 2 MB) and pick a brand color. Both appear on the PDF cover and the PNG share card.
+Yes. Upload your logo (up to 2 MB) and pick a brand color. Both appear on the PDF cover and the PNG share card. The exports still carry a small MetriQuill Free footer (see [Limits and known gaps](#limits-and-known-gaps)).
 
 ### Which currencies are supported?
 
@@ -147,6 +147,7 @@ Your CSV is parsed in your browser and never uploaded. The code contains no back
 
 ## Limits and known gaps
 
+- Exports carry MetriQuill Free branding: a footer on the PDF, PowerPoint and PNG card, a faint watermark on PDF pages 2 to 5 and an upgrade banner on the last PDF page. White-label PDFs (without this branding) are a MetriQuill paid feature.
 - CSV files up to 20 MB; the first 2,000 rows are used.
 - Built for standard Meta Ads Manager exports.
 - Arabic: client names render on the PNG card. In the PDF, campaign names that contain Arabic are replaced with "Campaign 1, 2, ..." for now.
