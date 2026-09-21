@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { AdPlatform } from "@/lib/types";
 
 interface Props {
   onFile: (file: File) => void;
@@ -8,6 +9,8 @@ interface Props {
   fileName: string;
   stepDone: boolean;
   currency: string;
+  platform: AdPlatform;
+  onPlatformChange: (platform: AdPlatform) => void;
 }
 
 const REQUIRED_COLUMNS = [
@@ -22,10 +25,56 @@ const REQUIRED_COLUMNS = [
   "Purchase ROAS (return on ad spend)",
 ];
 
-export default function CSVUploader({ onFile, onDemo, fileName, stepDone, currency }: Props) {
+const GOOGLE_REQUIRED_COLUMNS = [
+  "Campaign",
+  "Cost",
+  "Impr.",
+  "Clicks",
+  "CTR",
+  "Avg. CPC",
+  "Avg. CPM",
+  "Conversions",
+  "Cost / conv.",
+  "Conv. value / cost",
+];
+
+const PLATFORMS: { id: AdPlatform; label: string }[] = [
+  { id: "meta", label: "Meta Ads" },
+  { id: "google", label: "Google Ads" },
+];
+
+const GUIDE = {
+  meta: {
+    button: "How to export from Meta",
+    title: "How to export the right CSV from Meta Ads Manager",
+    steps: [
+      'Go to Meta Ads Manager and click the "Campaigns" tab at the top.',
+      'Click "Columns" (top right of the table) → "Customize Columns".',
+      "Make sure these columns are selected:",
+      'Click "Apply", then click "Export" (top right) → "Export Table Data" → "CSV".',
+    ],
+    columns: REQUIRED_COLUMNS,
+    hint: "Export from Meta Ads Manager → Campaigns → Customize Columns → Export CSV",
+  },
+  google: {
+    button: "How to export from Google Ads",
+    title: "How to export the right CSV from Google Ads",
+    steps: [
+      'In Google Ads, open "Campaigns" and pick the date range for the report.',
+      'Click "Columns" (the columns icon above the table) → "Modify columns".',
+      "Make sure these columns are added:",
+      'Click "Apply", then "Download" → ".csv". Title rows and totals are handled automatically.',
+    ],
+    columns: GOOGLE_REQUIRED_COLUMNS,
+    hint: "Export from Google Ads → Campaigns → Download → .csv",
+  },
+} as const;
+
+export default function CSVUploader({ onFile, onDemo, fileName, stepDone, currency, platform, onPlatformChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const guide = GUIDE[platform];
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -59,7 +108,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
             cursor: "pointer",
           }}
         >
-          {guideOpen ? "Hide guide ▲" : "How to export from Meta ▼"}
+          {guideOpen ? "Hide guide ▲" : `${guide.button} ▼`}
         </button>
       </div>
 
@@ -69,16 +118,11 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           background: "var(--bg)",
         }}>
           <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 12, color: "var(--text)" }}>
-            How to export the right CSV from Meta Ads Manager
+            {guide.title}
           </p>
 
           {/* Steps */}
-          {[
-            { n: "1", text: 'Go to Meta Ads Manager and click the "Campaigns" tab at the top.' },
-            { n: "2", text: 'Click "Columns" (top right of the table) → "Customize Columns".' },
-            { n: "3", text: "Make sure these columns are selected:" },
-            { n: "4", text: 'Click "Apply", then click "Export" (top right) → "Export Table Data" → "CSV".' },
-          ].map(({ n, text }) => (
+          {guide.steps.map((text, i) => ({ n: String(i + 1), text })).map(({ n, text }) => (
             <div key={n} style={{ display: "flex", gap: 12, marginBottom: 10 }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
@@ -95,7 +139,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
             marginLeft: 34, marginBottom: 14,
             display: "flex", flexWrap: "wrap", gap: 6,
           }}>
-            {REQUIRED_COLUMNS.map(col => (
+            {guide.columns.map(col => (
               <span key={col} style={{
                 fontSize: 11, fontWeight: 600, padding: "3px 8px",
                 background: "var(--surface)", border: "1px solid var(--border)",
@@ -105,6 +149,22 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
           </div>
 
           {/* Warning */}
+          {platform === "google" ? (
+          <div style={{
+            marginLeft: 34, padding: "10px 14px",
+            background: "var(--amber-light)", borderRadius: 8,
+            borderLeft: "3px solid var(--amber)",
+          }}>
+            <p style={{ fontSize: 12, color: "var(--amber)", fontWeight: 700, marginBottom: 4 }}>
+              Reach and frequency
+            </p>
+            <p style={{ fontSize: 12, color: "var(--text)", lineHeight: 1.6, margin: 0 }}>
+              Google Ads campaign exports do not include reach or frequency, so those metrics are
+              left out of the report instead of showing zeros. Choose &quot;.csv&quot;, not
+              &quot;Excel .csv&quot;, when downloading.
+            </p>
+          </div>
+          ) : (
           <div style={{
             marginLeft: 34, padding: "10px 14px",
             background: "var(--amber-light)", borderRadius: 8,
@@ -119,10 +179,34 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
               customizing the columns first. Follow the steps above and re-export.
             </p>
           </div>
+          )}
         </div>
       )}
 
       <div style={{ padding: 24 }}>
+        {/* Platform selector */}
+        <div role="radiogroup" aria-label="Ads platform" style={{
+          display: "flex", gap: 4, padding: 4, marginBottom: 16,
+          background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 8,
+        }}>
+          {PLATFORMS.map(p => {
+            const active = p.id === platform;
+            return (
+              <button key={p.id} role="radio" aria-checked={active}
+                onClick={() => onPlatformChange(p.id)}
+                style={{
+                  flex: 1, padding: "8px 12px", border: "none", borderRadius: 6, cursor: "pointer",
+                  fontSize: 13, fontWeight: 600,
+                  background: active ? "var(--surface)" : "transparent",
+                  color: active ? "var(--blue)" : "var(--muted)",
+                  boxShadow: active ? "var(--shadow)" : "none",
+                }}>
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+
         <input ref={inputRef} type="file" accept=".csv" style={{ display: "none" }}
           onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
 
@@ -147,7 +231,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
             <>
               <p style={{ fontWeight: 600, marginBottom: 4 }}>Drop your CSV here or click to browse</p>
               <p style={{ fontSize: 13, color: "var(--muted)" }}>
-                Export from Meta Ads Manager → Campaigns → Customize Columns → Export CSV
+                {guide.hint}
               </p>
             </>
           )}
@@ -180,7 +264,7 @@ export default function CSVUploader({ onFile, onDemo, fileName, stepDone, curren
               <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
             </svg>
           <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
-            Using <strong>Google Ads</strong> or <strong>TikTok</strong> data?
+            Using <strong>TikTok</strong> or other ad platforms?
           </span>
           <a
             href="https://metriquill.com?utm_source=metriquill-free&utm_medium=csv-callout&utm_campaign=upgrade"

@@ -17,6 +17,23 @@ const KEY_MAP: Record<string, keyof CampaignData> = {
   'cost per result': 'cpa', 'cost per results': 'cpa', 'cost per conversion': 'cpa', 'cost per purchase': 'cpa', 'cpa': 'cpa',
 };
 
+// Google Ads UI export (Campaigns > Download > .csv). Reach and frequency are not
+// part of a Google Ads campaign export, so they stay undefined instead of 0.
+// "Avg. impr. freq. / user (7 days)" is intentionally not mapped: it is a 7-day
+// window, not the frequency for the report period.
+const GOOGLE_ADS_KEY_MAP: Record<string, keyof CampaignData> = {
+  'campaign': 'name', 'campaign name': 'name',
+  'cost': 'spend',
+  'impr.': 'impressions', 'impressions': 'impressions',
+  'clicks': 'clicks',
+  'ctr': 'ctr',
+  'avg. cpc': 'cpc',
+  'avg. cpm': 'cpm',
+  'conversions': 'conversions',
+  'conv. value / cost': 'roas',
+  'cost / conv.': 'cpa',
+};
+
 function normalizeKey(k: string): string {
   return k.toLowerCase().trim().replace(/\s+/g, ' ');
 }
@@ -53,12 +70,16 @@ export function extractCSVDates(rows: Record<string, string>[]): { dateFrom: str
 }
 
 export function parseCSV(rows: Record<string, string>[]): CampaignData[] {
+  return mapRows(rows, KEY_MAP);
+}
+
+function mapRows(rows: Record<string, string>[], keyMap: Record<string, keyof CampaignData>): CampaignData[] {
   if (!rows.length) return [];
   const headers = Object.keys(rows[0]);
   const mapping: Record<string, keyof CampaignData> = {};
   headers.forEach(h => {
     const norm = normalizeKey(h);
-    if (KEY_MAP[norm]) mapping[h] = KEY_MAP[norm];
+    if (keyMap[norm]) mapping[h] = keyMap[norm];
   });
   return rows.map(row => {
     const c: Partial<CampaignData> = {};
@@ -76,6 +97,54 @@ export function parseCSV(rows: Record<string, string>[]): CampaignData[] {
     if (s.spend && s.conversions && !s.cpa) s.cpa = s.spend / s.conversions;
     return s;
   }).filter(c => c.spend > 0 || c.impressions > 0);
+}
+
+function isGoogleAdsHeader(row: string[]): boolean {
+  const cells = row.map(normalizeKey);
+  return cells.includes('campaign') && (cells.includes('cost') || cells.includes('impr.'));
+}
+
+function isTotalRow(row: string[]): boolean {
+  return row.some(cell => normalizeKey(cell ?? '').startsWith('total:'));
+}
+
+/**
+ * Parses a Google Ads campaign export read without headers (Papa.parse with header: false).
+ * The export may start with a title line and a date range line before the header row, and
+ * may end with "Total: ..." rows; both are skipped so totals are not counted twice.
+ */
+export function parseGoogleAdsCSV(table: string[][]): CampaignData[] {
+  const headerIdx = table.findIndex(isGoogleAdsHeader);
+  if (headerIdx === -1) return [];
+  const headers = table[headerIdx].map(h => (h ?? '').trim());
+  const rows = table
+    .slice(headerIdx + 1)
+    .filter(r => !isTotalRow(r))
+    .map(r => Object.fromEntries(headers.map((h, i) => [h, (r[i] ?? '').trim()])));
+  return mapRows(rows, GOOGLE_ADS_KEY_MAP).map(c => ({ ...c, reach: undefined, frequency: undefined }));
+}
+
+function toISODate(text: string): string {
+  const t = Date.parse(text.trim());
+  if (isNaN(t)) return '';
+  const d = new Date(t);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Reads the optional date range line ("September 1, 2026 - September 30, 2026") above the header. */
+export function extractGoogleAdsDates(table: string[][]): { dateFrom: string; dateTo: string } {
+  const headerIdx = table.findIndex(isGoogleAdsHeader);
+  for (const row of table.slice(0, Math.max(headerIdx, 0))) {
+    for (const cell of row) {
+      const m = (cell ?? '').match(/^(.+?)\s+[-\u2013]\s+(.+)$/);
+      if (!m) continue;
+      const dateFrom = toISODate(m[1]);
+      const dateTo = toISODate(m[2]);
+      if (dateFrom && dateTo) return { dateFrom, dateTo };
+    }
+  }
+  return { dateFrom: '', dateTo: '' };
 }
 
 export function generateDemoData(): CampaignData[] {

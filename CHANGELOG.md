@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- Google Ads CSV import: pick "Google Ads" above the upload box to load a campaign export from Google Ads. Title and date-range rows are skipped (the dates pre-fill the report), total rows are ignored, and Reach and Avg Frequency are left out of the report because Google Ads exports do not include them.
+
 ### Changed
 
 - README, GitHub description and topics reworked so the project is easier to find in search.

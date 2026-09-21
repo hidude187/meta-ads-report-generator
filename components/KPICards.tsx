@@ -45,6 +45,10 @@ const CARDS = [
   { key: "avgCPM",           label: "CPM",           type: "currency", color: "#7C3AED" },
 ] as const;
 
+// Reach and frequency are absent from some exports (e.g. Google Ads); hide them rather than show zeros.
+const REACH_KEYS: readonly string[] = ["totalReach", "avgFrequency"];
+const hasReachData = (kpis: KPIs) => kpis.totalReach > 0;
+
 export default function KPICards({ kpis, currency }: Props) {
   return (
     <div style={{
@@ -52,7 +56,7 @@ export default function KPICards({ kpis, currency }: Props) {
       gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
       gap: 14,
     }}>
-      {CARDS.map(card => {
+      {CARDS.filter(card => hasReachData(kpis) || !REACH_KEYS.includes(card.key)).map(card => {
         const val = kpis[card.key as keyof typeof kpis] as number;
         const sig = signal(card.key, val);
         const bLabel = benchmarkLabel(card.key);

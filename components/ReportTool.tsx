@@ -8,8 +8,8 @@ import Footer from "./Footer";
 import ClientInfoForm from "./ClientInfoForm";
 import CSVUploader from "./CSVUploader";
 import ReportDashboard from "./ReportDashboard";
-import { parseCSV, extractCSVDates, generateDemoData } from "@/lib/csvParser";
-import { CampaignData, ClientInfo } from "@/lib/types";
+import { parseCSV, extractCSVDates, parseGoogleAdsCSV, extractGoogleAdsDates, generateDemoData } from "@/lib/csvParser";
+import { AdPlatform, CampaignData, ClientInfo } from "@/lib/types";
 
 function StepArrow({ done }: { done?: boolean }) {
   const color = done ? "var(--green, #22c55e)" : "var(--border)";
@@ -38,6 +38,7 @@ export default function ReportTool() {
   const [fileName, setFileName] = useState("");
   const [infoFilled, setInfoFilled] = useState(false);
   const [csvLoaded, setCsvLoaded] = useState(false);
+  const [platform, setPlatform] = useState<AdPlatform>("meta");
 
   const handleFileUpload = useCallback((file: File) => {
     // Security: enforce file type and size limits
@@ -50,22 +51,40 @@ export default function ReportTool() {
       return;
     }
     setFileName(file.name);
-    Papa.parse(file, {
-      header: true,
+    // Google Ads exports can have title/date lines above the header row, so they are
+    // read without headers and parseGoogleAdsCSV locates the header itself.
+    const isGoogle = platform === "google";
+    Papa.parse<Record<string, string> | string[]>(file, {
+      header: !isGoogle,
       skipEmptyLines: true,
       complete: (results) => {
         try {
-          const rows = results.data as Record<string, string>[];
-          if (rows.length > 2000) {
-            alert(`Your CSV has ${rows.length} rows. Only the first 2,000 campaigns will be loaded.`);
+          let parsed: CampaignData[];
+          let dates: { dateFrom: string; dateTo: string };
+          if (isGoogle) {
+            const table = results.data as string[][];
+            parsed = parseGoogleAdsCSV(table);
+            dates = extractGoogleAdsDates(table);
+            if (parsed.length > 2000) {
+              alert(`Your CSV has ${parsed.length} campaigns. Only the first 2,000 campaigns will be loaded.`);
+              parsed = parsed.slice(0, 2000);
+            }
+          } else {
+            const rows = results.data as Record<string, string>[];
+            if (rows.length > 2000) {
+              alert(`Your CSV has ${rows.length} rows. Only the first 2,000 campaigns will be loaded.`);
+            }
+            parsed = parseCSV(rows.slice(0, 2000));
+            dates = extractCSVDates(rows);
           }
-          const parsed = parseCSV(rows.slice(0, 2000));
           if (!parsed.length) {
-            alert("No valid campaign rows found. Make sure your CSV has spend or impressions data.");
+            alert(isGoogle
+              ? "No valid campaign rows found. Make sure you exported the Campaigns table from Google Ads as .csv with the Campaign, Cost and Impr. columns."
+              : "No valid campaign rows found. Make sure your CSV has spend or impressions data.");
             return;
           }
           // Auto-fill dates from CSV if fields are currently empty
-          const { dateFrom, dateTo } = extractCSVDates(rows);
+          const { dateFrom, dateTo } = dates;
           setClientInfo(prev => ({
             ...prev,
             dateFrom: prev.dateFrom || dateFrom,
@@ -79,7 +98,7 @@ export default function ReportTool() {
         }
       },
     });
-  }, []);
+  }, [platform]);
 
   const handleDemo = useCallback(() => {
     setCampaigns(generateDemoData());
@@ -118,6 +137,8 @@ export default function ReportTool() {
             fileName={fileName}
             stepDone={csvLoaded}
             currency={clientInfo.currency}
+            platform={platform}
+            onPlatformChange={setPlatform}
           />
           {campaigns.length > 0 && (
             <>

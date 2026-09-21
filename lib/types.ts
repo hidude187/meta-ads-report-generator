@@ -1,3 +1,5 @@
+export type AdPlatform = 'meta' | 'google';
+
 export interface ClientInfo {
   clientName: string;
   agencyName: string;
