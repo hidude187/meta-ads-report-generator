@@ -2,7 +2,7 @@
   "name": "metriquill-free",
   "version": "1.0.0",
   "private": true,
-  "description": "Free Meta Ads report generator: upload a Facebook Ads Manager CSV and get a branded PDF client report, PowerPoint deck and PNG share card in 30 seconds. No login, runs in your browser.",
+  "description": "Free Meta Ads report generator: turn a Facebook Ads Manager CSV into a branded PDF client report in 30 seconds. No login, runs in your browser.",
   "keywords": [
     "meta-ads",
     "facebook-ads",

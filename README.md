@@ -1,8 +1,8 @@
 <div align="center">
   <img src="public/logo.svg" alt="MetriQuill logo" width="88" />
-  <h1>MetriQuill Free</h1>
+  <h1>MetriQuill Free: Meta Ads Report Generator</h1>
   <p>
-    <strong>Turn a Meta Ads CSV into a branded client report in 30 seconds.</strong><br />
+    <strong>Turn a Facebook Ads Manager CSV into a branded PDF client report in 30 seconds.</strong><br />
     Free. No login. Your data stays in your browser.
   </p>
 
@@ -17,7 +17,7 @@
 
 ## What it does
 
-MetriQuill Free is a Meta Ads (Facebook and Instagram Ads) report generator. Export your campaigns from Meta Ads Manager as a CSV, add your client and brand details, and get a client-ready report: no account, no ad-account connection, no subscription.
+MetriQuill Free is a free Meta Ads report generator for agencies and freelancers. Export your campaigns from Meta Ads Manager (Facebook and Instagram Ads) as a CSV, add your client and brand details, and get a client-ready report: no account, no ad-account connection, no subscription.
 
 | Output | What you get |
 | --- | --- |
@@ -27,6 +27,22 @@ MetriQuill Free is a Meta Ads (Facebook and Instagram Ads) report generator. Exp
 | **Clean CSV** | UTF-8 with BOM, opens correctly in Excel |
 
 Everything runs in your browser. There is no backend, no database and no login.
+
+## How to make a Facebook Ads report from a CSV
+
+1. Export a campaign-level CSV from Meta Ads Manager (steps below).
+2. Open [free.metriquill.com](https://free.metriquill.com) and add the client name, agency name, dates, currency, brand color and logo (all optional).
+3. Upload the CSV, or click **Load Demo Data** to try it first.
+4. Review the KPIs, charts, campaign badges and insights.
+5. Download the PDF report, PowerPoint deck, PNG share card or CSV.
+
+### Export the right CSV from Meta Ads Manager
+
+1. Open Meta Ads Manager and go to the **Campaigns** tab.
+2. Click **Columns**, then **Customize Columns**, and select: Amount spent, Impressions, Reach, Link clicks, CTR (link click-through rate), CPC (cost per link click), CPM (cost per 1,000 impressions), Results, Purchase ROAS (return on ad spend).
+3. Click **Apply**, then **Export**, then **Export Table Data**, then **CSV**.
+
+If Spend, Clicks and CTR all show as 0, the export is missing the cost columns. Re-export with the columns above.
 
 ## See it in action
 
@@ -87,6 +103,44 @@ Everything runs in your browser. There is no backend, no database and no login.
 - Recognizes common Meta column-name variants (see `KEY_MAP` in [`lib/csvParser.ts`](lib/csvParser.ts)).
 - A demo data button so you can try everything without a CSV.
 
+## Why this exists, and how it compares
+
+Connected reporting tools such as Whatagraph, AgencyAnalytics and DashThis pull data straight from your ad account and are built for recurring dashboards, with an account and a subscription. MetriQuill Free covers the simpler case: you already exported a CSV and need a client-ready PDF in a minute, without giving anyone access to your ad account.
+
+## FAQ
+
+### Is MetriQuill Free really free?
+
+Yes. The hosted tool at [free.metriquill.com](https://free.metriquill.com) needs no account, subscription or card. The source code is available under MIT + Commons Clause (see [License](#license)).
+
+### Is my Meta Ads data uploaded anywhere?
+
+No. Your CSV is parsed in your browser and never sent to a server. See [Privacy](#privacy) for the one third-party request (a web font).
+
+### Which Meta Ads Manager export do I need?
+
+A campaign-level CSV with the columns listed in [Export the right CSV](#export-the-right-csv-from-meta-ads-manager): Amount spent, Impressions, Reach, Link clicks, CTR, CPC, CPM, Results and Purchase ROAS.
+
+### Does it work with Instagram ads, Google Ads or TikTok?
+
+It reads Meta Ads Manager exports, which include Instagram placements. Google Ads and TikTok CSV support are on the roadmap (see the open issues).
+
+### Can I put my agency's logo and brand color on the report?
+
+Yes. Upload your logo (up to 2 MB) and pick a brand color. Both appear on the PDF cover and the PNG share card.
+
+### Which currencies are supported?
+
+USD, EUR, GBP, TRY, AED, SAR, MAD, DZD, TND and EGP.
+
+### Can I run it on my own machine?
+
+Yes, see [Run it locally](#run-it-locally). It needs Node.js 20.9 or newer and no API keys. The license allows personal or internal use and modification, not selling it.
+
+### How are the benchmarks chosen?
+
+They are generic cross-industry averages (2025-2026) kept in [`lib/benchmarks.ts`](lib/benchmarks.ts), not per vertical yet. Treat them as a reference, not a target.
+
 ## Privacy
 
 Your CSV is parsed in your browser and never uploaded. The code contains no backend calls, analytics, cookies or local storage. The only third-party request is a web font (Amiri, used for Arabic client names on the PNG card), loaded from Google Fonts when you export.
@@ -98,15 +152,6 @@ Your CSV is parsed in your browser and never uploaded. The code contains no back
 - Arabic: client names render on the PNG card. In the PDF, campaign names that contain Arabic are replaced with "Campaign 1, 2, ..." for now.
 - Benchmarks are generic cross-industry values, not per vertical.
 - Insights are rules, not AI.
-
-## Export the right CSV from Meta Ads Manager
-
-1. Open Meta Ads Manager and go to the **Campaigns** tab.
-2. Click **Columns**, then **Customize Columns**, and select: Amount spent, Impressions, Reach, Link clicks, CTR (link click-through rate), CPC (cost per link click), CPM (cost per 1,000 impressions), Results, Purchase ROAS (return on ad spend).
-3. Click **Apply**, then **Export**, then **Export Table Data**, then **CSV**.
-4. Upload the file at [free.metriquill.com](https://free.metriquill.com).
-
-If Spend, Clicks and CTR all show as 0, the export is missing the cost columns. Re-export with the columns above.
 
 ## Run it locally
 
@@ -134,6 +179,8 @@ Open http://localhost:3000. More in [`docs/onboarding.md`](docs/onboarding.md), 
 
 ## Roadmap
 
+Planned work is tracked in the [open issues](https://github.com/hidude187/metriquill-free/issues):
+
 - [ ] TikTok Ads CSV support
 - [ ] Google Ads CSV support
 - [ ] Period comparison (this month vs last month)
@@ -151,3 +198,5 @@ MIT + Commons Clause (source-available). Free to use, fork and modify for person
 ## About
 
 Made by [MetriQuill](https://metriquill.com?utm_source=github&utm_medium=readme&utm_campaign=free-repo). Need saved reports, client management, scheduled exports and multi-platform analysis? See [MetriQuill Pro](https://metriquill.com?utm_source=github&utm_medium=readme&utm_campaign=free-repo).
+
+If MetriQuill Free saves you time, a star on GitHub helps other agencies find it.
