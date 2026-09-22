@@ -13,22 +13,6 @@ export function reverseArabic(str: string): string {
   return str.split(" ").reverse().join(" ");
 }
 
-export async function fetchAmiriBase64(): Promise<string | null> {
-  try {
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("timeout")), 5000)
-    );
-    const res = await Promise.race([
-      fetch("https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHqUpvrIw74NL.woff2"),
-      timeout,
-    ]);
-    const buf = await res.arrayBuffer();
-    const bytes = new Uint8Array(buf);
-    let binary = "";
-    bytes.forEach(b => { binary += String.fromCharCode(b); });
-    return btoa(binary);
-  } catch { return null; }
-}
 
 export function canvasRoundRect(
   ctx: CanvasRenderingContext2D,

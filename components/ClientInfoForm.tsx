@@ -1,6 +1,7 @@
 "use client";
 
 import { ClientInfo } from "@/lib/types";
+import { CURRENCIES } from "@/lib/constants";
 import { useRef } from "react";
 
 interface Props {
@@ -9,8 +10,6 @@ interface Props {
   onLogoUpload: (dataUrl: string) => void;
   stepDone: boolean;
 }
-
-const CURRENCIES = ["USD", "EUR", "GBP", "AED", "SAR", "MAD", "DZD", "TND", "EGP", "TRY"];
 
 export default function ClientInfoForm({ info, onChange, onLogoUpload, stepDone }: Props) {
   const logoRef = useRef<HTMLInputElement>(null);
