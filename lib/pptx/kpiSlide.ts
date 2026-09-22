@@ -23,7 +23,9 @@ export function buildKpiSlide(ctx: SlideCtx): void {
     });
   }
 
-  // 10 KPI cards in 5×2 grid
+  // Up to 10 KPI cards in a 5-column grid; Reach and Avg Frequency are dropped when the
+  // export has no reach data (e.g. Google Ads) instead of showing zeros.
+  const hasReach = kpis.totalReach > 0;
   const kpiCards = [
     { label: "Total Spend",   value: fmt(kpis.totalSpend, "currency", clientInfo.currency),  color: brand },
     { label: "Avg ROAS",      value: fmt(kpis.avgROAS, "decimal") + "x",                     color: "10B981" },
@@ -35,7 +37,7 @@ export function buildKpiSlide(ctx: SlideCtx): void {
     { label: "Avg CPC",       value: fmt(kpis.avgCPC, "currency", clientInfo.currency),     color: "8B5CF6" },
     { label: "CPM",           value: fmt(kpis.avgCPM, "currency", clientInfo.currency),     color: "F59E0B" },
     { label: "Conversions",   value: fmt(kpis.totalConversions, "number"),                   color: "EF4444" },
-  ];
+  ].filter(c => hasReach || (c.label !== "Reach" && c.label !== "Avg Frequency"));
   const cW = 1.72, cH = 1.8, cGapX = 0.14, cGapY = 0.14;
   const cStartX = 0.5, cStartY = 1.0;
   kpiCards.forEach(({ label, value, color }, i) => {

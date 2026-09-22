@@ -26,7 +26,7 @@ components/
 lib/
   types.ts              TypeScript interfaces: ClientInfo, CampaignData, KPISummary
   constants.ts          Magic numbers: MAX_CSV_SIZE_BYTES, CURRENCIES, etc.
-  csvParser.ts          CSV column normalization, parseCSV(), generateDemoData()
+  csvParser.ts          CSV column normalization, parseCSV() (Meta), parseGoogleAdsCSV(), generateDemoData()
   kpi.ts                calcKPIs() — derives KPISummary from CampaignData[]
   formatters.ts         fmt() + re-exports from benchmarks.ts + insights.ts
   benchmarks.ts         BENCHMARKS, metricHealth(), metricTooltip(), getCampaignBadge()
@@ -42,7 +42,7 @@ lib/
 ```
 CSV file (user upload)
   -> Papa.parse()           [ReportTool.tsx]
-  -> parseCSV(rows)         [lib/csvParser.ts]  — column normalization
+  -> parseCSV(rows) or parseGoogleAdsCSV(table)  [lib/csvParser.ts]  — column normalization per platform
   -> CampaignData[]
 
 CampaignData[]
